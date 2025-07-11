@@ -18,27 +18,28 @@ export const AppLogo: React.FC<AppLogoProps> = ({ size = 32, showBackground = fa
         width: size, 
         height: size,
         backgroundColor: showBackground ? '#E85A4F' : 'transparent',
-        borderRadius: showBackground ? size / 8 : 0,
+        borderRadius: showBackground ? size / 6 : 0,
       }
     ]}>
       <View style={styles.bookContainer}>
         <BookOpen 
-          size={size * 0.6} 
+          size={size * 0.65} 
           color={showBackground ? '#FFFFFF' : colors.primary} 
-          strokeWidth={2.5}
+          strokeWidth={showBackground ? 3 : 2.5}
+          fill="none"
         />
         <View style={[
           styles.heartContainer,
           {
-            top: size * 0.25,
-            left: size * 0.25,
+            top: size * 0.28,
+            left: size * 0.28,
           }
         ]}>
           <Heart 
-            size={size * 0.3} 
+            size={size * 0.32} 
             color={showBackground ? '#FFFFFF' : colors.primary}
             fill={showBackground ? '#FFFFFF' : colors.primary}
-            strokeWidth={2}
+            strokeWidth={showBackground ? 2.5 : 2}
           />
         </View>
       </View>
@@ -51,6 +52,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   bookContainer: {
     position: 'relative',

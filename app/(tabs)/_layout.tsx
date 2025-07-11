@@ -1,18 +1,30 @@
-import React from "react";
-import { Tabs } from "expo-router";
-import { useThemeStore } from "@/store/themeStore";
-import { Home, BookOpen, BookText, Settings } from "lucide-react-native";
-import { Platform } from "react-native";
-import { AppLogo } from "@/components/AppLogo";
+import { Tabs, router } from 'expo-router';
+import React, { useEffect } from 'react';
+import { useThemeStore } from '@/store/themeStore';
+import { useAuthStore } from '@/store/authStore';
+import { Home, BookOpen, BookText, Settings } from 'lucide-react-native';
+import { Platform } from 'react-native';
+import { AppLogo } from '@/components/AppLogo';
 
 export default function TabLayout() {
   const { theme, colors } = useThemeStore();
+  const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace('/(auth)/login');
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
   
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.gray[500],
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           backgroundColor: colors.card,
           borderTopColor: colors.border,

@@ -5,10 +5,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useThemeStore } from "@/store/themeStore";
+import { useAuthStore } from "@/store/authStore";
 import { AppLogo } from "@/components/AppLogo";
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)",
+  initialRouteName: "(auth)",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -43,6 +44,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const { theme, colors } = useThemeStore();
+  const { isAuthenticated } = useAuthStore();
   
   return (
     <>
@@ -61,9 +63,10 @@ function RootLayoutNav() {
           contentStyle: {
             backgroundColor: colors.background,
           },
-          headerRight: () => <AppLogo size={28} />,
+          headerRight: () => isAuthenticated ? <AppLogo size={28} /> : null,
         }}
       >
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen 
           name="prayer/[id]" 

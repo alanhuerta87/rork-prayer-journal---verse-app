@@ -1,13 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, Switch, TouchableOpacity, ScrollView, Alert, Platform, Share } from 'react-native';
+import { router } from 'expo-router';
 import { useThemeStore } from '@/store/themeStore';
+import { useAuthStore } from '@/store/authStore';
 import { TranslationSelector } from '@/components/TranslationSelector';
 import { usePrayerStore } from '@/store/prayerStore';
 import { themeColors } from '@/constants/colors';
-import { Bell, Moon, Sun, Trash2, Share2, Info, Palette } from 'lucide-react-native';
+import { Bell, Moon, Sun, Trash2, Share2, Info, Palette, LogOut, User } from 'lucide-react-native';
 
 export default function SettingsScreen() {
   const { theme, themeColor, colors, toggleTheme, setThemeColor } = useThemeStore();
+  const { user, logout } = useAuthStore();
   const [notifications, setNotifications] = React.useState(true);
   const { prayers } = usePrayerStore();
 
@@ -102,8 +105,45 @@ Android: ${playStoreUrl}`;
     Alert.alert("About", "My Prayer Journal App v1.0\n\nA place to record your prayers and grow in your faith journey.");
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: () => {
+            logout();
+            router.replace('/(auth)/login');
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.section, { 
+        backgroundColor: colors.card,
+        shadowColor: colors.black,
+      }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Account</Text>
+        
+        <View style={[styles.settingItem, { borderBottomColor: colors.gray[200] }]}>
+          <View style={styles.settingInfo}>
+            <User size={22} color={colors.text} style={styles.settingIcon} />
+            <View>
+              <Text style={[styles.settingText, { color: colors.text }]}>{user?.name}</Text>
+              <Text style={[styles.settingSubtext, { color: colors.textSecondary }]}>{user?.email}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
       <View style={[styles.section, { 
         backgroundColor: colors.card,
         shadowColor: colors.black,
@@ -244,6 +284,21 @@ Android: ${playStoreUrl}`;
           <View style={[styles.actionArrow, { borderColor: colors.gray[400] }]} />
         </TouchableOpacity>
       </View>
+      
+      <View style={[styles.section, { 
+        backgroundColor: colors.card,
+        shadowColor: colors.black,
+      }]}>
+        <TouchableOpacity 
+          style={[styles.actionItem, styles.logoutAction]} 
+          onPress={handleLogout}
+        >
+          <View style={styles.actionInfo}>
+            <LogOut size={22} color="#EF4444" style={styles.actionIcon} />
+            <Text style={[styles.actionText, { color: '#EF4444' }]}>Sign Out</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -354,5 +409,12 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
+  },
+  settingSubtext: {
+    fontSize: 14,
+    marginTop: 2,
+  },
+  logoutAction: {
+    borderBottomWidth: 0,
   },
 });
