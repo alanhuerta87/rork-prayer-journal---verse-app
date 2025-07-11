@@ -110,7 +110,7 @@ export default function SignupScreen() {
                   if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
                 }}
                 placeholder="Enter your full name"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.textLight}
                 autoCapitalize="words"
                 autoCorrect={false}
               />
@@ -127,7 +127,7 @@ export default function SignupScreen() {
                   if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                 }}
                 placeholder="Enter your email"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.textLight}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -146,7 +146,7 @@ export default function SignupScreen() {
                     if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
                   }}
                   placeholder="Create a password"
-                  placeholderTextColor={colors.textSecondary}
+                  placeholderTextColor={colors.textLight}
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -156,9 +156,9 @@ export default function SignupScreen() {
                   onPress={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff size={20} color={colors.textSecondary} />
+                    <EyeOff size={20} color={colors.textLight} />
                   ) : (
-                    <Eye size={20} color={colors.textSecondary} />
+                    <Eye size={20} color={colors.textLight} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -176,7 +176,7 @@ export default function SignupScreen() {
                     if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: undefined }));
                   }}
                   placeholder="Confirm your password"
-                  placeholderTextColor={colors.textSecondary}
+                  placeholderTextColor={colors.textLight}
                   secureTextEntry={!showConfirmPassword}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -186,9 +186,9 @@ export default function SignupScreen() {
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff size={20} color={colors.textSecondary} />
+                    <EyeOff size={20} color={colors.textLight} />
                   ) : (
-                    <Eye size={20} color={colors.textSecondary} />
+                    <Eye size={20} color={colors.textLight} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -248,7 +248,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.textLight,
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 22,
@@ -320,7 +320,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   loginText: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.textLight,
   },
   loginLink: {
     fontSize: 16,

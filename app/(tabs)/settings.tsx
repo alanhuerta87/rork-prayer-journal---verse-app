@@ -139,7 +139,7 @@ Android: ${playStoreUrl}`;
             <User size={22} color={colors.text} style={styles.settingIcon} />
             <View>
               <Text style={[styles.settingText, { color: colors.text }]}>{user?.name}</Text>
-              <Text style={[styles.settingSubtext, { color: colors.textSecondary }]}>{user?.email}</Text>
+              <Text style={[styles.settingSubtext, { color: colors.textLight }]}>{user?.email}</Text>
             </View>
           </View>
         </View>

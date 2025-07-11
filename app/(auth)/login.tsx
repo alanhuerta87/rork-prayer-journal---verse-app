@@ -85,7 +85,7 @@ export default function LoginScreen() {
                   if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                 }}
                 placeholder="Enter your email"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.textLight}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -104,7 +104,7 @@ export default function LoginScreen() {
                     if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
                   }}
                   placeholder="Enter your password"
-                  placeholderTextColor={colors.textSecondary}
+                  placeholderTextColor={colors.textLight}
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -114,9 +114,9 @@ export default function LoginScreen() {
                   onPress={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff size={20} color={colors.textSecondary} />
+                    <EyeOff size={20} color={colors.textLight} />
                   ) : (
-                    <Eye size={20} color={colors.textSecondary} />
+                    <Eye size={20} color={colors.textLight} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -176,7 +176,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.textLight,
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 22,
@@ -248,7 +248,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   signupText: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.textLight,
   },
   signupLink: {
     fontSize: 16,
