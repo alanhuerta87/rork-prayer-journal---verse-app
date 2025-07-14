@@ -16,6 +16,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
+  deleteAccount: () => Promise<boolean>;
   setLoading: (loading: boolean) => void;
 }
 
@@ -50,6 +51,15 @@ const mockSignup = async (email: string, password: string, name: string): Promis
     };
   }
   return null;
+};
+
+const mockDeleteAccount = async (): Promise<boolean> => {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // In a real app, this would make an API call to delete the user's account
+  // and all associated data from the server
+  return true;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -97,6 +107,25 @@ export const useAuthStore = create<AuthState>()(
       
       logout: () => {
         set({ user: null, isAuthenticated: false });
+      },
+      
+      deleteAccount: async () => {
+        set({ isLoading: true });
+        try {
+          const success = await mockDeleteAccount();
+          if (success) {
+            // Clear all user data
+            set({ user: null, isAuthenticated: false, isLoading: false });
+            return true;
+          } else {
+            set({ isLoading: false });
+            return false;
+          }
+        } catch (error) {
+          console.error('Delete account error:', error);
+          set({ isLoading: false });
+          return false;
+        }
       },
       
       setLoading: (loading: boolean) => {

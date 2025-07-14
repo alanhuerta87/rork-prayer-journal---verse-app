@@ -6,13 +6,13 @@ import { useAuthStore } from '@/store/authStore';
 import { TranslationSelector } from '@/components/TranslationSelector';
 import { usePrayerStore } from '@/store/prayerStore';
 import { themeColors } from '@/constants/colors';
-import { Bell, Moon, Sun, Trash2, Share2, Info, Palette, LogOut, User } from 'lucide-react-native';
+import { Bell, Moon, Sun, Trash2, Share2, Info, Palette, LogOut, User, UserX } from 'lucide-react-native';
 
 export default function SettingsScreen() {
   const { theme, themeColor, colors, toggleTheme, setThemeColor } = useThemeStore();
-  const { user, logout } = useAuthStore();
+  const { user, logout, deleteAccount, isLoading } = useAuthStore();
   const [notifications, setNotifications] = React.useState(true);
-  const { prayers } = usePrayerStore();
+  const { prayers, clearAllPrayers } = usePrayerStore();
 
   const toggleNotifications = () => {
     setNotifications(previous => !previous);
@@ -120,6 +120,62 @@ Android: ${playStoreUrl}`;
           onPress: () => {
             logout();
             router.replace('/(auth)/login');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to permanently delete your account? This action cannot be undone and will remove all your prayers, settings, and personal data.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: () => {
+            // Show a second confirmation
+            Alert.alert(
+              'Final Confirmation',
+              'This will permanently delete your account and all associated data. Are you absolutely sure?',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Yes, Delete My Account',
+                  style: 'destructive',
+                  onPress: async () => {
+                    const success = await deleteAccount();
+                    if (success) {
+                      // Clear all local data
+                      clearAllPrayers();
+                      Alert.alert(
+                        'Account Deleted',
+                        'Your account has been successfully deleted.',
+                        [
+                          {
+                            text: 'OK',
+                            onPress: () => router.replace('/(auth)/login'),
+                          },
+                        ]
+                      );
+                    } else {
+                      Alert.alert(
+                        'Error',
+                        'There was an error deleting your account. Please try again later.'
+                      );
+                    }
+                  },
+                },
+              ]
+            );
           },
         },
       ]
@@ -299,6 +355,32 @@ Android: ${playStoreUrl}`;
           </View>
         </TouchableOpacity>
       </View>
+      
+      <View style={[styles.section, styles.dangerSection, { 
+        backgroundColor: colors.card,
+        shadowColor: colors.black,
+        borderColor: colors.error,
+      }]}>
+        <Text style={[styles.sectionTitle, { color: colors.error }]}>Danger Zone</Text>
+        <TouchableOpacity 
+          style={[styles.actionItem, styles.deleteAccountAction]} 
+          onPress={handleDeleteAccount}
+          disabled={isLoading}
+        >
+          <View style={styles.actionInfo}>
+            <UserX size={22} color={colors.error} style={styles.actionIcon} />
+            <View>
+              <Text style={[styles.actionText, { color: colors.error }]}>Delete Account</Text>
+              <Text style={[styles.deleteAccountSubtext, { color: colors.gray[600] }]}>Permanently remove your account and all data</Text>
+            </View>
+          </View>
+          {isLoading && (
+            <View style={styles.loadingIndicator}>
+              <Text style={[styles.loadingText, { color: colors.gray[600] }]}>Processing...</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -416,5 +498,24 @@ const styles = StyleSheet.create({
   },
   logoutAction: {
     borderBottomWidth: 0,
+  },
+  dangerSection: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+  },
+  deleteAccountAction: {
+    borderBottomWidth: 0,
+    paddingVertical: 20,
+  },
+  deleteAccountSubtext: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  loadingIndicator: {
+    paddingHorizontal: 12,
+  },
+  loadingText: {
+    fontSize: 14,
+    fontStyle: 'italic',
   },
 });

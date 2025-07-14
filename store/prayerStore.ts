@@ -23,6 +23,7 @@ interface PrayerState {
   addPrayer: (prayer: Omit<Prayer, 'id' | 'date' | 'isFavorite'>) => void;
   updatePrayer: (prayer: Prayer) => void;
   deletePrayer: (id: string) => void;
+  clearAllPrayers: () => void;
   toggleFavorite: (id: string) => void;
   setPreferredTranslation: (translation: BibleTranslation) => void;
   refreshDailyVerse: () => Promise<void>;
@@ -69,6 +70,10 @@ export const usePrayerStore = create<PrayerState>()(
         set((state) => ({
           prayers: state.prayers.filter((prayer) => prayer.id !== id),
         }));
+      },
+      
+      clearAllPrayers: () => {
+        set({ prayers: [] });
       },
       
       toggleFavorite: (id) => {
