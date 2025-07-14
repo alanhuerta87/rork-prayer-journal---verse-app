@@ -361,7 +361,6 @@ Android: ${playStoreUrl}`;
         shadowColor: colors.black,
         borderColor: colors.error,
       }]}>
-        <Text style={[styles.sectionTitle, { color: colors.error }]}>Danger Zone</Text>
         <TouchableOpacity 
           style={[styles.actionItem, styles.deleteAccountAction]} 
           onPress={handleDeleteAccount}
