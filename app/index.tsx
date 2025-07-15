@@ -11,15 +11,11 @@ export default function IndexScreen() {
   useEffect(() => {
     // Small delay to prevent flash
     const timer = setTimeout(() => {
-      if (isAuthenticated) {
-        router.replace('/(tabs)');
-      } else {
-        router.replace('/(auth)/login');
-      }
+      router.replace('/(main)');
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated]);
+  }, []);
 
   return (
     <View style={{ 

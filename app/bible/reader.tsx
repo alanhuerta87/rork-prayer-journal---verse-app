@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useThemeStore } from '@/store/themeStore';
+import { useAuthStore } from '@/store/authStore';
 import { TranslationSelector } from '@/components/TranslationSelector';
 import { usePrayerStore } from '@/store/prayerStore';
 import { ChevronLeft, ChevronRight, Share2, BookmarkPlus, Book, ChevronDown, RefreshCw, Bookmark } from 'lucide-react-native';
@@ -21,6 +22,7 @@ export default function BibleReaderScreen() {
     lastReadingPosition 
   } = usePrayerStore();
   const { colors } = useThemeStore();
+  const { isAuthenticated } = useAuthStore();
   
   const bookId = bookParam || lastReadingPosition?.bookId || 'john';
   const book = bibleBooks.find(b => b.id === bookId) || bibleBooks.find(b => b.id === 'john')!;
@@ -38,8 +40,10 @@ export default function BibleReaderScreen() {
   useEffect(() => {
     loadChapter();
     checkBookmarkStatus();
-    // Update last reading position
-    setLastReadingPosition(bookId, chapter);
+    // Update last reading position only if authenticated
+    if (isAuthenticated) {
+      setLastReadingPosition(bookId, chapter);
+    }
   }, [bookId, chapter, preferredTranslation]);
   
   const checkBookmarkStatus = () => {
@@ -118,6 +122,18 @@ export default function BibleReaderScreen() {
   };
   
   const toggleBookmark = () => {
+    if (!isAuthenticated) {
+      Alert.alert(
+        'Sign In Required',
+        'Please sign in to bookmark verses and save your reading progress.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign In', onPress: () => router.push('/(auth)/login') }
+        ]
+      );
+      return;
+    }
+    
     if (isBookmarked) {
       removeBookmark(bookId, chapter);
       setIsBookmarked(false);

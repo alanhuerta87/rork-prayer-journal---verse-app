@@ -75,7 +75,7 @@ export default function SignupScreen() {
     
     const success = await signup(email.trim(), password, name.trim());
     if (success) {
-      router.replace('/(tabs)');
+      router.replace('/(main)');
     } else {
       Alert.alert('Signup Failed', 'Unable to create account. Please try again.');
     }

@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Prayer, DailyVerse, BibleTranslation } from '@/types';
 import { getTodayVerse, getVerseForDate } from '@/mocks/verses';
+import { useAuthStore } from './authStore';
 
 interface BookmarkState {
   bookId: string;
@@ -131,6 +132,12 @@ export const usePrayerStore = create<PrayerState>()(
       },
       
       addBookmark: (bookId: string, chapter: number, verse?: number) => {
+        // Only allow bookmarking if authenticated
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
         const { preferredTranslation, bookmarks } = get();
         const existingIndex = bookmarks.findIndex(
           b => b.bookId === bookId && b.chapter === chapter
@@ -156,6 +163,12 @@ export const usePrayerStore = create<PrayerState>()(
       },
       
       removeBookmark: (bookId: string, chapter: number) => {
+        // Only allow removing bookmarks if authenticated
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
         set((state) => ({
           bookmarks: state.bookmarks.filter(
             b => !(b.bookId === bookId && b.chapter === chapter)
@@ -164,6 +177,12 @@ export const usePrayerStore = create<PrayerState>()(
       },
       
       setLastReadingPosition: (bookId: string, chapter: number, verse?: number) => {
+        // Only save reading position if authenticated
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
         const { preferredTranslation } = get();
         set({
           lastReadingPosition: {
@@ -177,6 +196,11 @@ export const usePrayerStore = create<PrayerState>()(
       },
       
       getBookmarks: () => {
+        // Only return bookmarks if authenticated
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return [];
+        }
         return get().bookmarks;
       },
     }),

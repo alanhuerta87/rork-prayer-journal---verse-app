@@ -1,24 +1,22 @@
 import { Tabs, router } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useThemeStore } from '@/store/themeStore';
 import { useAuthStore } from '@/store/authStore';
-import { Home, BookOpen, BookText, Settings } from 'lucide-react-native';
-import { Platform } from 'react-native';
+import { BookOpen, BookText, Settings, LogIn } from 'lucide-react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { AppLogo } from '@/components/AppLogo';
 
-export default function TabLayout() {
+export default function MainLayout() {
   const { theme, colors } = useThemeStore();
   const { isAuthenticated } = useAuthStore();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace('/(main)');
+  const handleAuthPress = () => {
+    if (isAuthenticated) {
+      router.push('/(tabs)');
+    } else {
+      router.push('/(auth)/login');
     }
-  }, [isAuthenticated]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
+  };
   
   return (
     <Tabs
@@ -30,17 +28,17 @@ export default function TabLayout() {
           borderTopColor: colors.border,
           elevation: 0,
           shadowOpacity: 0,
-          height: Platform.OS === 'ios' ? 90 : 75, // Increased height for better visibility
-          paddingBottom: Platform.OS === 'ios' ? 30 : 15, // More padding for iOS safe area
+          height: Platform.OS === 'ios' ? 90 : 75,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 15,
           paddingTop: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
-          paddingBottom: Platform.OS === 'ios' ? 0 : 8, // Adjust label positioning
+          paddingBottom: Platform.OS === 'ios' ? 0 : 8,
         },
         tabBarIconStyle: {
-          marginTop: Platform.OS === 'ios' ? 0 : 6, // Adjust icon positioning
+          marginTop: Platform.OS === 'ios' ? 0 : 6,
         },
         headerStyle: {
           backgroundColor: colors.card,
@@ -55,22 +53,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
-          headerTitle: "My Prayer Journal",
-        }}
-      />
-      <Tabs.Screen
-        name="prayers"
-        options={{
-          title: "Prayers",
-          tabBarIcon: ({ color, size }) => <BookText size={size} color={color} />,
-          headerTitle: "My Prayers",
-        }}
-      />
-      <Tabs.Screen
         name="bible"
         options={{
           title: "Bible",
@@ -79,11 +61,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="account"
         options={{
-          title: "Settings",
-          tabBarIcon: ({ color, size }) => <Settings size={size} color={color} />,
-          headerTitle: "Settings",
+          title: isAuthenticated ? "My Account" : "Sign In",
+          tabBarIcon: ({ color, size }) => 
+            isAuthenticated ? <BookText size={size} color={color} /> : <LogIn size={size} color={color} />,
+          headerTitle: isAuthenticated ? "My Prayer Journal" : "Sign In",
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            handleAuthPress();
+          },
         }}
       />
     </Tabs>

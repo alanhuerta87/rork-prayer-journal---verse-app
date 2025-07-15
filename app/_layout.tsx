@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import { AppLogo } from "@/components/AppLogo";
 
 export const unstable_settings = {
-  initialRouteName: "(auth)",
+  initialRouteName: "(main)",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -67,6 +67,7 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(main)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen 
           name="prayer/[id]" 

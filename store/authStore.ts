@@ -107,6 +107,8 @@ export const useAuthStore = create<AuthState>()(
       
       logout: () => {
         set({ user: null, isAuthenticated: false });
+        // Clear prayer data when logging out
+        AsyncStorage.removeItem('prayer-journal-storage');
       },
       
       deleteAccount: async () => {
@@ -116,6 +118,8 @@ export const useAuthStore = create<AuthState>()(
           if (success) {
             // Clear all user data
             set({ user: null, isAuthenticated: false, isLoading: false });
+            // Clear prayer data when deleting account
+            AsyncStorage.removeItem('prayer-journal-storage');
             return true;
           } else {
             set({ isLoading: false });
