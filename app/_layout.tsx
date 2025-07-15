@@ -9,7 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import { AppLogo } from "@/components/AppLogo";
 
 export const unstable_settings = {
-  initialRouteName: "(main)",
+  initialRouteName: "index",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
