@@ -2,7 +2,7 @@ import { Tabs, router } from 'expo-router';
 import React from 'react';
 import { useThemeStore } from '@/store/themeStore';
 import { useAuthStore } from '@/store/authStore';
-import { BookOpen, BookText, Settings, LogIn } from 'lucide-react-native';
+import { BookOpen, BookText, Settings, LogIn, Home } from 'lucide-react-native';
 import { Platform, TouchableOpacity } from 'react-native';
 import { AppLogo } from '@/components/AppLogo';
 
@@ -52,6 +52,14 @@ export default function MainLayout() {
         headerRight: () => <AppLogo size={28} />,
       }}
     >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          headerTitle: "My Prayer Journal",
+        }}
+      />
       <Tabs.Screen
         name="bible"
         options={{
