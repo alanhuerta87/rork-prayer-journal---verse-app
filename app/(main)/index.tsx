@@ -30,7 +30,6 @@ export default function MainScreen() {
         <View style={styles.hero}>
           <Heart size={64} color={colors.primary} />
           <Text style={[styles.heroTitle, { color: colors.text }]}>My Prayer Journal</Text>
-
         </View>
         
         <View style={styles.features}>
