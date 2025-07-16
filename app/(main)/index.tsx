@@ -30,23 +30,21 @@ export default function MainScreen() {
         <View style={styles.hero}>
           <Heart size={64} color={colors.primary} />
           <Text style={[styles.heroTitle, { color: colors.text }]}>My Prayer Journal</Text>
-          <Text style={[styles.heroSubtitle, { color: colors.textLight }]}>
-            Read the Bible and keep track of your spiritual journey
-          </Text>
+
         </View>
         
         <View style={styles.features}>
           <View style={styles.featureItem}>
             <BookOpen size={24} color={colors.primary} />
-            <Text style={[styles.featureText, { color: colors.textLight }]}>Read the Bible anytime</Text>
+            <Text style={[styles.featureText, { color: colors.textLight }]}>Read the Bible anytime, anywhere</Text>
           </View>
           <View style={styles.featureItem}>
             <BookText size={24} color={colors.primary} />
-            <Text style={[styles.featureText, { color: colors.textLight }]}>Save your prayers and thoughts</Text>
+            <Text style={[styles.featureText, { color: colors.textLight }]}>Jot down your daily prayers</Text>
           </View>
           <View style={styles.featureItem}>
             <Heart size={24} color={colors.primary} />
-            <Text style={[styles.featureText, { color: colors.textLight }]}>Track your spiritual growth</Text>
+            <Text style={[styles.featureText, { color: colors.textLight }]}>Inspirational Verse of the Day</Text>
           </View>
         </View>
         
