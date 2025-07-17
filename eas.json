@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 16.0.0",
-    "appVersionSource": "remote"
+    "version": ">= 16.0.0"
   },
   "build": {
     "development": {
@@ -13,12 +12,21 @@
     },
     "production": {
       "autoIncrement": true,
+      "appVersionSource": "remote",
       "ios": {
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "usesAppleSignIn": false,
+        "usesNonExemptEncryption": false
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "alanhuerta49@yahoo.com",
+        "ascAppId": "6737901234",
+        "appleTeamId": "RXX6UN5Q4U"
+      }
+    }
   }
 }
