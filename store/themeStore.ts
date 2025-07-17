@@ -69,6 +69,21 @@ export const useThemeStore = create<ThemeState>()(
     {
       name: 'prayer-journal-theme',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        theme: state.theme,
+        themeColor: state.themeColor,
+        notifications: state.notifications,
+        reminderTime: state.reminderTime.toISOString(),
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state && typeof state.reminderTime === 'string') {
+          state.reminderTime = new Date(state.reminderTime);
+        }
+        if (state) {
+          // Ensure colors are properly set based on current theme
+          state.colors = createThemeColors(state.themeColor, state.theme === 'dark');
+        }
+      },
     }
   )
 );
