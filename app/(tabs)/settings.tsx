@@ -57,7 +57,6 @@ export default function SettingsScreen() {
           sound: true,
         },
         trigger: {
-          type: 'calendar',
           hour: reminderTime.getHours(),
           minute: reminderTime.getMinutes(),
           repeats: true,
