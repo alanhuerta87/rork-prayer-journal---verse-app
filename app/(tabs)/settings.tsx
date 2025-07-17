@@ -318,14 +318,30 @@ Android: ${playStoreUrl}`;
         )}
         
         {showTimePicker && (
-          <DateTimePicker
-            value={reminderTime}
-            mode="time"
-            is24Hour={false}
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleTimeChange}
-            style={Platform.OS === 'ios' ? styles.timePicker : undefined}
-          />
+          <View style={[styles.timePickerContainer, { backgroundColor: colors.background }]}>
+            <DateTimePicker
+              value={reminderTime}
+              mode="time"
+              is24Hour={false}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleTimeChange}
+              style={[
+                Platform.OS === 'ios' ? styles.timePicker : undefined,
+                { backgroundColor: colors.card }
+              ]}
+              textColor={colors.text}
+              accentColor={colors.primary}
+              themeVariant={theme}
+            />
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity 
+                style={[styles.timePickerDone, { backgroundColor: colors.primary }]}
+                onPress={() => setShowTimePicker(false)}
+              >
+                <Text style={[styles.timePickerDoneText, { color: colors.white }]}>Done</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
         
         <View style={[styles.settingItem, { borderBottomColor: colors.gray[200] }]}>
@@ -609,8 +625,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
   },
-  timePicker: {
+  timePickerContainer: {
     marginHorizontal: 16,
     marginVertical: 8,
+    borderRadius: 12,
+    padding: 16,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  timePicker: {
+    alignSelf: 'center',
+    width: '100%',
+  },
+  timePickerDone: {
+    marginTop: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignSelf: 'center',
+  },
+  timePickerDoneText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
