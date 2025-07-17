@@ -17,7 +17,7 @@ interface BackgroundOption {
   type: BackgroundType;
   name: string;
   value?: string;
-  colors?: string[];
+  colors?: readonly [string, string, ...string[]];
 }
 
 const backgroundOptions: BackgroundOption[] = [
@@ -26,9 +26,9 @@ const backgroundOptions: BackgroundOption[] = [
   { id: 'nature2', type: 'image', name: 'Ocean', value: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=400&fit=crop' },
   { id: 'nature3', type: 'image', name: 'Forest', value: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=400&fit=crop' },
   { id: 'nature4', type: 'image', name: 'Sky', value: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop' },
-  { id: 'gradient1', type: 'gradient', name: 'Sunset', colors: ['#FF6B6B', '#4ECDC4'] },
-  { id: 'gradient2', type: 'gradient', name: 'Ocean', colors: ['#667eea', '#764ba2'] },
-  { id: 'gradient3', type: 'gradient', name: 'Forest', colors: ['#134E5E', '#71B280'] },
+  { id: 'gradient1', type: 'gradient', name: 'Sunset', colors: ['#FF6B6B', '#4ECDC4'] as readonly [string, string, ...string[]] },
+  { id: 'gradient2', type: 'gradient', name: 'Ocean', colors: ['#667eea', '#764ba2'] as readonly [string, string, ...string[]] },
+  { id: 'gradient3', type: 'gradient', name: 'Forest', colors: ['#134E5E', '#71B280'] as readonly [string, string, ...string[]] },
   { id: 'solid1', type: 'solid', name: 'Navy', value: '#2C3E50' },
   { id: 'solid2', type: 'solid', name: 'Purple', value: '#8E44AD' },
   { id: 'solid3', type: 'solid', name: 'Teal', value: '#16A085' },
@@ -186,7 +186,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse }) => {
                   </ImageBackground>
                 )}
                 {option.type === 'gradient' && option.colors && (
-                  <LinearGradient colors={option.colors && option.colors.length >= 2 ? [option.colors[0], option.colors[1], ...(option.colors.slice(2) || [])] as readonly [string, string, ...string[]] : ['#000000', '#ffffff']} style={styles.backgroundPreview} />
+                  <LinearGradient colors={option.colors} style={styles.backgroundPreview} />
                 )}
                 {option.type === 'solid' && option.value && (
                   <View style={[styles.backgroundPreview, { backgroundColor: option.value }]} />
@@ -220,7 +220,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse }) => {
     
     if (selectedBackground.type === 'gradient' && selectedBackground.colors) {
       return (
-        <LinearGradient colors={selectedBackground.colors && selectedBackground.colors.length >= 2 ? [selectedBackground.colors[0], selectedBackground.colors[1], ...(selectedBackground.colors.slice(2) || [])] as readonly [string, string, ...string[]] : ['#000000', '#ffffff']} style={styles.backgroundImage}>
+        <LinearGradient colors={selectedBackground.colors} style={styles.backgroundImage}>
           <View style={styles.overlay}>
             <CardContent />
           </View>

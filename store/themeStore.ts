@@ -76,10 +76,17 @@ export const useThemeStore = create<ThemeState>()(
         reminderTime: state.reminderTime.toISOString(),
       }),
       onRehydrateStorage: () => (state) => {
-        if (state && typeof state.reminderTime === 'string') {
-          state.reminderTime = new Date(state.reminderTime);
-        }
         if (state) {
+          // Ensure reminderTime is a proper Date object
+          if (typeof state.reminderTime === 'string') {
+            state.reminderTime = new Date(state.reminderTime);
+          } else if (!state.reminderTime || !(state.reminderTime instanceof Date)) {
+            // Fallback to default time if invalid
+            const defaultTime = new Date();
+            defaultTime.setHours(9, 0, 0, 0);
+            state.reminderTime = defaultTime;
+          }
+          
           // Ensure colors are properly set based on current theme
           state.colors = createThemeColors(state.themeColor, state.theme === 'dark');
         }

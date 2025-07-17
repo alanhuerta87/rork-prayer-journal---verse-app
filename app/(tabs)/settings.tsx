@@ -15,6 +15,16 @@ export default function SettingsScreen() {
   const { user, logout, deleteAccount, isLoading } = useAuthStore();
   const [showTimePicker, setShowTimePicker] = React.useState(false);
   const { prayers, clearAllPrayers } = usePrayerStore();
+  
+  // Ensure reminderTime is always a valid Date object
+  const validReminderTime = React.useMemo(() => {
+    if (!reminderTime || !(reminderTime instanceof Date) || isNaN(reminderTime.getTime())) {
+      const defaultTime = new Date();
+      defaultTime.setHours(9, 0, 0, 0);
+      return defaultTime;
+    }
+    return reminderTime;
+  }, [reminderTime]);
 
   const toggleNotifications = async () => {
     const newValue = !notifications;
@@ -57,11 +67,10 @@ export default function SettingsScreen() {
           sound: true,
         },
         trigger: {
-          type: 'daily',
-          hour: reminderTime.getHours(),
-          minute: reminderTime.getMinutes(),
+          hour: validReminderTime.getHours(),
+          minute: validReminderTime.getMinutes(),
           repeats: true,
-        } as any,
+        } as Notifications.CalendarTriggerInput,
       });
     } catch (error) {
       console.error('Error scheduling notification:', error);
@@ -82,6 +91,11 @@ export default function SettingsScreen() {
   };
 
   const formatTime = (date: Date) => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      const defaultTime = new Date();
+      defaultTime.setHours(9, 0, 0, 0);
+      return defaultTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
@@ -311,7 +325,7 @@ Android: ${playStoreUrl}`;
               <Clock size={22} color={colors.textLight} style={styles.settingIcon} />
               <View>
                 <Text style={[styles.settingText, { color: colors.text }]}>Reminder Time</Text>
-                <Text style={[styles.settingSubtext, { color: colors.textLight }]}>{formatTime(reminderTime)}</Text>
+                <Text style={[styles.settingSubtext, { color: colors.textLight }]}>{formatTime(validReminderTime)}</Text>
               </View>
             </View>
             <View style={[styles.actionArrow, { borderColor: colors.gray[400] }]} />
@@ -321,7 +335,7 @@ Android: ${playStoreUrl}`;
         {showTimePicker && (
           <View style={[styles.timePickerContainer, { backgroundColor: colors.background }]}>
             <DateTimePicker
-              value={reminderTime}
+              value={validReminderTime}
               mode="time"
               is24Hour={false}
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
