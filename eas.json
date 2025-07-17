@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 16.0.0",
-    "promptToConfigurePushNotifications": false
+    "version": ">= 16.0.0"
   },
   "build": {
     "development": {
@@ -12,13 +11,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "appVersionSource": "remote",
-      "ios": {
-        "buildConfiguration": "Release",
-        "usesAppleSignIn": false,
-        "usesNonExemptEncryption": false
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
