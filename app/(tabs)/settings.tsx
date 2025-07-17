@@ -57,10 +57,11 @@ export default function SettingsScreen() {
           sound: true,
         },
         trigger: {
+          type: 'daily',
           hour: reminderTime.getHours(),
           minute: reminderTime.getMinutes(),
           repeats: true,
-        },
+        } as any,
       });
     } catch (error) {
       console.error('Error scheduling notification:', error);
