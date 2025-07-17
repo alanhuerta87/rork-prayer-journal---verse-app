@@ -8,7 +8,7 @@ import { usePrayerStore } from '@/store/prayerStore';
 import { themeColors } from '@/constants/colors';
 import { Bell, Moon, Sun, Trash2, Share2, Info, Palette, LogOut, User, UserX, Clock } from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import * as Notifications from 'expo-notifications';
+
 
 export default function SettingsScreen() {
   const { theme, themeColor, colors, notifications, reminderTime, toggleTheme, setThemeColor, setNotifications, setReminderTime } = useThemeStore();
@@ -28,54 +28,10 @@ export default function SettingsScreen() {
 
   const toggleNotifications = async () => {
     const newValue = !notifications;
-    
-    if (newValue) {
-      // Request notification permissions
-      if (Platform.OS !== 'web') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert(
-            'Permission Required',
-            'Please enable notifications in your device settings to receive daily reminders.'
-          );
-          return;
-        }
-        await scheduleNotification();
-      }
-    } else {
-      // Cancel all scheduled notifications
-      if (Platform.OS !== 'web') {
-        await Notifications.cancelAllScheduledNotificationsAsync();
-      }
-    }
-    
     setNotifications(newValue);
   };
 
-  const scheduleNotification = async () => {
-    if (Platform.OS === 'web') return;
-    
-    try {
-      // Cancel existing notifications first
-      await Notifications.cancelAllScheduledNotificationsAsync();
-      
-      // Schedule daily notification
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Daily Prayer Reminder',
-          body: 'Take a moment to reflect and pray today 🙏',
-          sound: true,
-        },
-        trigger: {
-          hour: validReminderTime.getHours(),
-          minute: validReminderTime.getMinutes(),
-          repeats: true,
-        } as Notifications.CalendarTriggerInput,
-      });
-    } catch (error) {
-      console.error('Error scheduling notification:', error);
-    }
-  };
+
 
   const handleTimeChange = (event: any, selectedTime?: Date) => {
     if (Platform.OS === 'android') {
@@ -84,9 +40,6 @@ export default function SettingsScreen() {
     
     if (selectedTime) {
       setReminderTime(selectedTime);
-      if (notifications && Platform.OS !== 'web') {
-        scheduleNotification();
-      }
     }
   };
 
