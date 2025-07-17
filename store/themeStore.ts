@@ -10,9 +10,13 @@ interface ThemeState {
   theme: ThemeType;
   themeColor: ThemeColorType;
   colors: typeof lightColors;
+  notifications: boolean;
+  reminderTime: Date;
   toggleTheme: () => void;
   setTheme: (theme: ThemeType) => void;
   setThemeColor: (color: ThemeColorType) => void;
+  setNotifications: (enabled: boolean) => void;
+  setReminderTime: (time: Date) => void;
 }
 
 export const useThemeStore = create<ThemeState>()(
@@ -21,6 +25,12 @@ export const useThemeStore = create<ThemeState>()(
       theme: 'light',
       themeColor: 'blue',
       colors: lightColors,
+      notifications: false,
+      reminderTime: (() => {
+        const defaultTime = new Date();
+        defaultTime.setHours(9, 0, 0, 0);
+        return defaultTime;
+      })(),
       
       toggleTheme: () => {
         set((state) => {
@@ -46,6 +56,14 @@ export const useThemeStore = create<ThemeState>()(
           themeColor: color,
           colors: createThemeColors(color, theme === 'dark'),
         });
+      },
+      
+      setNotifications: (enabled: boolean) => {
+        set({ notifications: enabled });
+      },
+      
+      setReminderTime: (time: Date) => {
+        set({ reminderTime: time });
       },
     }),
     {

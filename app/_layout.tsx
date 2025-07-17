@@ -4,9 +4,22 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
+import * as Notifications from "expo-notifications";
 import { useThemeStore } from "@/store/themeStore";
 import { useAuthStore } from "@/store/authStore";
 import { AppLogo } from "@/components/AppLogo";
+
+// Configure notifications
+if (Platform.OS !== 'web') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+}
 
 export const unstable_settings = {
   initialRouteName: "index",
@@ -34,6 +47,13 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  useEffect(() => {
+    // Request notification permissions on app start
+    if (Platform.OS !== 'web') {
+      Notifications.requestPermissionsAsync();
+    }
+  }, []);
 
   if (!loaded) {
     return null;

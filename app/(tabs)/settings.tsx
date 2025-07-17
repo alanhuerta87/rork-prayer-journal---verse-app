@@ -6,17 +6,82 @@ import { useAuthStore } from '@/store/authStore';
 import { TranslationSelector } from '@/components/TranslationSelector';
 import { usePrayerStore } from '@/store/prayerStore';
 import { themeColors } from '@/constants/colors';
-import { Bell, Moon, Sun, Trash2, Share2, Info, Palette, LogOut, User, UserX } from 'lucide-react-native';
+import { Bell, Moon, Sun, Trash2, Share2, Info, Palette, LogOut, User, UserX, Clock } from 'lucide-react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as Notifications from 'expo-notifications';
 
 export default function SettingsScreen() {
-  const { theme, themeColor, colors, toggleTheme, setThemeColor } = useThemeStore();
+  const { theme, themeColor, colors, notifications, reminderTime, toggleTheme, setThemeColor, setNotifications, setReminderTime } = useThemeStore();
   const { user, logout, deleteAccount, isLoading } = useAuthStore();
-  const [notifications, setNotifications] = React.useState(true);
+  const [showTimePicker, setShowTimePicker] = React.useState(false);
   const { prayers, clearAllPrayers } = usePrayerStore();
 
-  const toggleNotifications = () => {
-    setNotifications(previous => !previous);
-    // In a real app, this would update notification settings
+  const toggleNotifications = async () => {
+    const newValue = !notifications;
+    
+    if (newValue) {
+      // Request notification permissions
+      if (Platform.OS !== 'web') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Please enable notifications in your device settings to receive daily reminders.'
+          );
+          return;
+        }
+        await scheduleNotification();
+      }
+    } else {
+      // Cancel all scheduled notifications
+      if (Platform.OS !== 'web') {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+      }
+    }
+    
+    setNotifications(newValue);
+  };
+
+  const scheduleNotification = async () => {
+    if (Platform.OS === 'web') return;
+    
+    try {
+      // Cancel existing notifications first
+      await Notifications.cancelAllScheduledNotificationsAsync();
+      
+      // Schedule daily notification
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Daily Prayer Reminder',
+          body: 'Take a moment to reflect and pray today 🙏',
+          sound: true,
+        },
+        trigger: {
+          hour: reminderTime.getHours(),
+          minute: reminderTime.getMinutes(),
+          repeats: true,
+        },
+      });
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+    }
+  };
+
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowTimePicker(false);
+    }
+    
+    if (selectedTime) {
+      setReminderTime(selectedTime);
+      if (notifications && Platform.OS !== 'web') {
+        scheduleNotification();
+      }
+    }
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const handleClearData = () => {
@@ -235,6 +300,33 @@ Android: ${playStoreUrl}`;
             thumbColor={Platform.OS === 'ios' ? undefined : colors.white}
           />
         </View>
+        
+        {notifications && (
+          <TouchableOpacity 
+            style={[styles.settingItem, { borderBottomColor: colors.gray[200], paddingLeft: 54 }]}
+            onPress={() => setShowTimePicker(true)}
+          >
+            <View style={styles.settingInfo}>
+              <Clock size={22} color={colors.textLight} style={styles.settingIcon} />
+              <View>
+                <Text style={[styles.settingText, { color: colors.text }]}>Reminder Time</Text>
+                <Text style={[styles.settingSubtext, { color: colors.textLight }]}>{formatTime(reminderTime)}</Text>
+              </View>
+            </View>
+            <View style={[styles.actionArrow, { borderColor: colors.gray[400] }]} />
+          </TouchableOpacity>
+        )}
+        
+        {showTimePicker && (
+          <DateTimePicker
+            value={reminderTime}
+            mode="time"
+            is24Hour={false}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleTimeChange}
+            style={Platform.OS === 'ios' ? styles.timePicker : undefined}
+          />
+        )}
         
         <View style={[styles.settingItem, { borderBottomColor: colors.gray[200] }]}>
           <View style={styles.settingInfo}>
@@ -516,5 +608,9 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 14,
     fontStyle: 'italic',
+  },
+  timePicker: {
+    marginHorizontal: 16,
+    marginVertical: 8,
   },
 });
