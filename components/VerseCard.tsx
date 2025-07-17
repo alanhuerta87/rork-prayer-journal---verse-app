@@ -186,7 +186,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse }) => {
                   </ImageBackground>
                 )}
                 {option.type === 'gradient' && option.colors && (
-                  <LinearGradient colors={option.colors.length >= 2 ? option.colors as readonly [string, string, ...string[]] : ['#000000', '#ffffff']} style={styles.backgroundPreview} />
+                  <LinearGradient colors={option.colors && option.colors.length >= 2 ? [option.colors[0], option.colors[1], ...(option.colors.slice(2) || [])] as readonly [string, string, ...string[]] : ['#000000', '#ffffff']} style={styles.backgroundPreview} />
                 )}
                 {option.type === 'solid' && option.value && (
                   <View style={[styles.backgroundPreview, { backgroundColor: option.value }]} />
@@ -220,7 +220,7 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse }) => {
     
     if (selectedBackground.type === 'gradient' && selectedBackground.colors) {
       return (
-        <LinearGradient colors={selectedBackground.colors && selectedBackground.colors.length >= 2 ? selectedBackground.colors as readonly [string, string, ...string[]] : ['#000000', '#ffffff']} style={styles.backgroundImage}>
+        <LinearGradient colors={selectedBackground.colors && selectedBackground.colors.length >= 2 ? [selectedBackground.colors[0], selectedBackground.colors[1], ...(selectedBackground.colors.slice(2) || [])] as readonly [string, string, ...string[]] : ['#000000', '#ffffff']} style={styles.backgroundImage}>
           <View style={styles.overlay}>
             <CardContent />
           </View>

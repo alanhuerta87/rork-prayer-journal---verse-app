@@ -57,6 +57,7 @@ export default function SettingsScreen() {
           sound: true,
         },
         trigger: {
+          type: 'daily' as const,
           hour: reminderTime.getHours(),
           minute: reminderTime.getMinutes(),
           repeats: true,
