@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Prayer, DailyVerse, BibleTranslation } from '@/types';
+import { Prayer, DailyVerse, BibleTranslation, PrayerCategory, PrayerStatus, ReadingPlan, UserReadingProgress } from '@/types';
 import { getTodayVerse, getVerseForDate } from '@/mocks/verses';
 import { useAuthStore } from './authStore';
 
@@ -21,11 +21,16 @@ interface PrayerState {
   isLoadingVerse: boolean;
   bookmarks: BookmarkState[];
   lastReadingPosition: BookmarkState | null;
-  addPrayer: (prayer: Omit<Prayer, 'id' | 'date' | 'isFavorite'>) => void;
+  readingProgress: UserReadingProgress[];
+  verseHighlights: { [key: string]: { highlighted: boolean; note?: string } };
+  addPrayer: (prayer: Omit<Prayer, 'id' | 'date' | 'isFavorite' | 'status'>) => void;
   updatePrayer: (prayer: Prayer) => void;
   deletePrayer: (id: string) => void;
   clearAllPrayers: () => void;
   toggleFavorite: (id: string) => void;
+  updatePrayerStatus: (id: string, status: PrayerStatus, answeredDate?: string) => void;
+  filterPrayersByCategory: (category?: PrayerCategory) => Prayer[];
+  filterPrayersByStatus: (status?: PrayerStatus) => Prayer[];
   setPreferredTranslation: (translation: BibleTranslation) => void;
   refreshDailyVerse: () => Promise<void>;
   loadVerseForDate: (date: Date) => Promise<void>;
@@ -33,6 +38,12 @@ interface PrayerState {
   removeBookmark: (bookId: string, chapter: number) => void;
   setLastReadingPosition: (bookId: string, chapter: number, verse?: number) => void;
   getBookmarks: () => BookmarkState[];
+  startReadingPlan: (planId: string) => void;
+  updateReadingProgress: (planId: string, day: number) => void;
+  getReadingProgress: (planId: string) => UserReadingProgress | null;
+  highlightVerse: (bookId: string, chapter: number, verse: number, note?: string) => void;
+  removeVerseHighlight: (bookId: string, chapter: number, verse: number) => void;
+  getVerseHighlight: (bookId: string, chapter: number, verse: number) => { highlighted: boolean; note?: string } | null;
 }
 
 export const usePrayerStore = create<PrayerState>()(
@@ -45,12 +56,16 @@ export const usePrayerStore = create<PrayerState>()(
       isLoadingVerse: false,
       bookmarks: [],
       lastReadingPosition: null,
+      readingProgress: [],
+      verseHighlights: {},
       
       addPrayer: (prayer) => {
         const newPrayer: Prayer = {
           id: Date.now().toString(),
           date: new Date().toISOString(),
           isFavorite: false,
+          status: 'ongoing',
+          category: prayer.category || 'general',
           ...prayer,
         };
         
@@ -85,6 +100,30 @@ export const usePrayerStore = create<PrayerState>()(
               : prayer
           ),
         }));
+      },
+      
+      updatePrayerStatus: (id, status, answeredDate) => {
+        set((state) => ({
+          prayers: state.prayers.map((prayer) => 
+            prayer.id === id 
+              ? { 
+                  ...prayer, 
+                  status,
+                  answeredDate: status === 'answered' ? (answeredDate || new Date().toISOString()) : prayer.answeredDate
+                } 
+              : prayer
+          ),
+        }));
+      },
+      
+      filterPrayersByCategory: (category) => {
+        const { prayers } = get();
+        return category ? prayers.filter(prayer => prayer.category === category) : prayers;
+      },
+      
+      filterPrayersByStatus: (status) => {
+        const { prayers } = get();
+        return status ? prayers.filter(prayer => prayer.status === status) : prayers;
       },
       
       setPreferredTranslation: (translation) => {
@@ -203,6 +242,98 @@ export const usePrayerStore = create<PrayerState>()(
         }
         return get().bookmarks;
       },
+      
+      startReadingPlan: (planId) => {
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
+        const { readingProgress } = get();
+        const existingProgress = readingProgress.find(p => p.planId === planId);
+        
+        if (!existingProgress) {
+          const newProgress: UserReadingProgress = {
+            planId,
+            currentDay: 1,
+            completedDays: [],
+            startDate: new Date().toISOString()
+          };
+          
+          set((state) => ({
+            readingProgress: [...state.readingProgress, newProgress]
+          }));
+        }
+      },
+      
+      updateReadingProgress: (planId, day) => {
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
+        set((state) => ({
+          readingProgress: state.readingProgress.map(progress =>
+            progress.planId === planId
+              ? {
+                  ...progress,
+                  currentDay: Math.max(progress.currentDay, day + 1),
+                  completedDays: [...new Set([...progress.completedDays, day])]
+                }
+              : progress
+          )
+        }));
+      },
+      
+      getReadingProgress: (planId) => {
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return null;
+        }
+        
+        const { readingProgress } = get();
+        return readingProgress.find(p => p.planId === planId) || null;
+      },
+      
+      highlightVerse: (bookId, chapter, verse, note) => {
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
+        const key = `${bookId}-${chapter}-${verse}`;
+        set((state) => ({
+          verseHighlights: {
+            ...state.verseHighlights,
+            [key]: { highlighted: true, note }
+          }
+        }));
+      },
+      
+      removeVerseHighlight: (bookId, chapter, verse) => {
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return;
+        }
+        
+        const key = `${bookId}-${chapter}-${verse}`;
+        set((state) => {
+          const newHighlights = { ...state.verseHighlights };
+          delete newHighlights[key];
+          return { verseHighlights: newHighlights };
+        });
+      },
+      
+      getVerseHighlight: (bookId, chapter, verse) => {
+        const authStore = useAuthStore.getState();
+        if (!authStore.isAuthenticated) {
+          return null;
+        }
+        
+        const key = `${bookId}-${chapter}-${verse}`;
+        const { verseHighlights } = get();
+        return verseHighlights[key] || null;
+      },
     }),
     {
       name: 'prayer-journal-storage',
@@ -214,6 +345,8 @@ export const usePrayerStore = create<PrayerState>()(
         preferredTranslation: state.preferredTranslation,
         bookmarks: state.bookmarks,
         lastReadingPosition: state.lastReadingPosition,
+        readingProgress: state.readingProgress,
+        verseHighlights: state.verseHighlights,
       }),
     }
   )

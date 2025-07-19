@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
 import { useThemeStore } from '@/store/themeStore';
 import { usePrayerStore } from '@/store/prayerStore';
-import { Send } from 'lucide-react-native';
+import { Send, Tag } from 'lucide-react-native';
+import { PrayerCategory } from '@/types';
+import { getPrayerCategories } from '@/mocks/readingPlans';
 
 interface PrayerInputProps {
   onSubmit?: () => void;
@@ -12,7 +14,11 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
   const { colors } = useThemeStore();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<PrayerCategory>('general');
+  const [notes, setNotes] = useState('');
   const { addPrayer } = usePrayerStore();
+  
+  const categories = getPrayerCategories();
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) return;
@@ -20,10 +26,14 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
     addPrayer({
       title: title.trim(),
       content: content.trim(),
+      category: selectedCategory,
+      notes: notes.trim() || undefined,
     });
     
     setTitle('');
     setContent('');
+    setNotes('');
+    setSelectedCategory('general');
     Keyboard.dismiss();
     
     if (onSubmit) {
@@ -59,6 +69,51 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
         placeholder="Write your prayer here..."
         value={content}
         onChangeText={setContent}
+        multiline
+        textAlignVertical="top"
+        placeholderTextColor={colors.gray[400]}
+      />
+      
+      {/* Category Selection */}
+      <View style={styles.categorySection}>
+        <View style={styles.categoryHeader}>
+          <Tag size={16} color={colors.primary} />
+          <Text style={[styles.categoryLabel, { color: colors.text }]}>Category</Text>
+        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.id}
+              style={[
+                styles.categoryChip,
+                { 
+                  backgroundColor: selectedCategory === category.id ? category.color : colors.gray[100],
+                  borderColor: category.color,
+                }
+              ]}
+              onPress={() => setSelectedCategory(category.id)}
+            >
+              <Text style={[
+                styles.categoryChipText,
+                { 
+                  color: selectedCategory === category.id ? colors.white : colors.text 
+                }
+              ]}>
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+      
+      <TextInput
+        style={[styles.notesInput, { 
+          backgroundColor: colors.gray[100],
+          color: colors.text,
+        }]}
+        placeholder="Additional notes (optional)..."
+        value={notes}
+        onChangeText={setNotes}
         multiline
         textAlignVertical="top"
         placeholderTextColor={colors.gray[400]}
@@ -123,5 +178,39 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     marginRight: 8,
+  },
+  categorySection: {
+    marginBottom: 16,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  categoryLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 6,
+  },
+  categoryScroll: {
+    flexDirection: 'row',
+  },
+  categoryChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+    borderWidth: 1,
+  },
+  categoryChipText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  notesInput: {
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    minHeight: 60,
+    marginBottom: 16,
   },
 });

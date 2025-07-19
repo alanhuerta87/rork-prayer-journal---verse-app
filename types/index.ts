@@ -1,3 +1,6 @@
+export type PrayerStatus = 'ongoing' | 'answered' | 'archived';
+export type PrayerCategory = 'gratitude' | 'requests' | 'intercession' | 'praise' | 'confession' | 'general';
+
 export interface Prayer {
   id: string;
   title: string;
@@ -5,6 +8,10 @@ export interface Prayer {
   date: string;
   isFavorite: boolean;
   tags?: string[];
+  category: PrayerCategory;
+  status: PrayerStatus;
+  answeredDate?: string;
+  notes?: string;
 }
 
 export interface DailyVerse {
@@ -17,6 +24,34 @@ export interface DailyVerse {
 export interface BibleVerse {
   verse: number;
   text: string;
+  highlighted?: boolean;
+  note?: string;
+}
+
+export interface ReadingPlan {
+  id: string;
+  name: string;
+  description: string;
+  duration: number; // days
+  readings: ReadingPlanDay[];
+}
+
+export interface ReadingPlanDay {
+  day: number;
+  readings: ReadingReference[];
+}
+
+export interface ReadingReference {
+  bookId: string;
+  chapter: number;
+  verses?: number[];
+}
+
+export interface UserReadingProgress {
+  planId: string;
+  currentDay: number;
+  completedDays: number[];
+  startDate: string;
 }
 
 export interface BibleBook {

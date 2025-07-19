@@ -2,9 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Prayer } from '@/types';
 import { useThemeStore } from '@/store/themeStore';
-import { Heart, Edit, Trash2 } from 'lucide-react-native';
+import { Heart, Edit, Trash2, Tag, CheckCircle, Clock, Archive } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { usePrayerStore } from '@/store/prayerStore';
+import { getPrayerCategories, getPrayerStatuses } from '@/mocks/readingPlans';
 
 interface PrayerCardProps {
   prayer: Prayer;
@@ -16,11 +17,30 @@ export const PrayerCard: React.FC<PrayerCardProps> = ({ prayer, compact = false 
   const { colors } = useThemeStore();
   const { toggleFavorite, deletePrayer } = usePrayerStore();
   
+  const categories = getPrayerCategories();
+  const statuses = getPrayerStatuses();
+  
+  const category = categories.find(c => c.id === prayer.category);
+  const status = statuses.find(s => s.id === prayer.status);
+  
   const formattedDate = new Date(prayer.date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   });
+  
+  const getStatusIcon = () => {
+    switch (prayer.status) {
+      case 'answered':
+        return <CheckCircle size={14} color={status?.color} />;
+      case 'ongoing':
+        return <Clock size={14} color={status?.color} />;
+      case 'archived':
+        return <Archive size={14} color={status?.color} />;
+      default:
+        return <Clock size={14} color={colors.gray[400]} />;
+    }
+  };
 
   const handleEdit = () => {
     router.push(`/prayer/${prayer.id}`);
