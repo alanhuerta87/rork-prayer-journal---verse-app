@@ -1,17 +1,20 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { TranslationSelector } from '@/components/TranslationSelector';
 import { BookmarksList } from '@/components/BookmarksList';
 import { useThemeStore } from '@/store/themeStore';
 import { usePrayerStore } from '@/store/prayerStore';
+import { useAuthStore } from '@/store/authStore';
 import { useRouter, Stack } from 'expo-router';
-import { BookOpen, ChevronRight, Search, X, Bookmark, History, Calendar } from 'lucide-react-native';
+import { BookOpen, ChevronRight, Search, X, Bookmark, History, Calendar, Play, Clock } from 'lucide-react-native';
 import { bibleBooks } from '@/constants/colors';
+import { readingPlans } from '@/mocks/readingPlans';
 
 export default function BibleScreen() {
   const router = useRouter();
   const { colors } = useThemeStore();
-  const { lastReadingPosition } = usePrayerStore();
+  const { lastReadingPosition, startReadingPlan, getReadingProgress } = usePrayerStore();
+  const { isAuthenticated } = useAuthStore();
   const [activeTestament, setActiveTestament] = React.useState<'old' | 'new'>('new');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeTab, setActiveTab] = React.useState<'books' | 'bookmarks' | 'plans'>('books');
@@ -47,8 +50,55 @@ export default function BibleScreen() {
     setSearchQuery('');
   };
 
+  const handleStartPlan = (planId: string) => {
+    const plan = readingPlans.find(p => p.id === planId);
+    if (!plan) return;
+
+    if (!isAuthenticated) {
+      Alert.alert(
+        'Sign In Required',
+        'Please sign in to start a reading plan and track your progress.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign In', onPress: () => router.push('/(auth)/login') }
+        ]
+      );
+      return;
+    }
+
+    const existingProgress = getReadingProgress(plan.id);
+    if (existingProgress) {
+      Alert.alert(
+        'Continue Reading Plan',
+        `You're already on day ${existingProgress.currentDay} of this plan. Would you like to continue?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Continue', onPress: () => router.push(`/bible/plan/${plan.id}`) }
+        ]
+      );
+    } else {
+      Alert.alert(
+        'Start Reading Plan',
+        `Are you ready to begin "${plan.name}"? This plan will take ${plan.duration} days to complete.`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Start Plan', 
+            onPress: () => {
+              startReadingPlan(plan.id);
+              router.push(`/bible/plan/${plan.id}`);
+            }
+          }
+        ]
+      );
+    }
+  };
+
   const oldTestamentCount = bibleBooks.filter(book => book.testament === 'old').length;
   const newTestamentCount = bibleBooks.filter(book => book.testament === 'new').length;
+
+  // Get the first 3 reading plans for featured display
+  const featuredPlans = readingPlans.slice(0, 3);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -287,41 +337,58 @@ export default function BibleScreen() {
           </TouchableOpacity>
           
           <View style={styles.plansFeatures}>
-            <View style={styles.featureItem}>
-              <View style={[styles.featureIcon, { backgroundColor: colors.primary + '20' }]}>
-                <BookOpen size={20} color={colors.primary} />
-              </View>
-              <View style={styles.featureText}>
-                <Text style={[styles.featureTitle, { color: colors.text }]}>1-Year Bible Plan</Text>
-                <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
-                  Read through the entire Bible chronologically
-                </Text>
-              </View>
-            </View>
-            
-            <View style={styles.featureItem}>
-              <View style={[styles.featureIcon, { backgroundColor: colors.success + '20' }]}>
-                <Calendar size={20} color={colors.success} />
-              </View>
-              <View style={styles.featureText}>
-                <Text style={[styles.featureTitle, { color: colors.text }]}>6-Month New Testament</Text>
-                <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
-                  Focus on the life and teachings of Jesus
-                </Text>
-              </View>
-            </View>
-            
-            <View style={styles.featureItem}>
-              <View style={[styles.featureIcon, { backgroundColor: '#F59E0B20' }]}>
-                <Bookmark size={20} color="#F59E0B" />
-              </View>
-              <View style={styles.featureText}>
-                <Text style={[styles.featureTitle, { color: colors.text }]}>30 Days of Wisdom</Text>
-                <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
-                  Daily readings from Psalms and Proverbs
-                </Text>
-              </View>
-            </View>
+            {featuredPlans.map((plan, index) => {
+              const progress = isAuthenticated ? getReadingProgress(plan.id) : null;
+              const isStarted = !!progress;
+              const iconColors = [colors.primary, colors.success, '#F59E0B'];
+              const iconColor = iconColors[index] || colors.primary;
+              
+              return (
+                <TouchableOpacity
+                  key={plan.id}
+                  style={[styles.featureItem, styles.clickableFeatureItem, { 
+                    backgroundColor: colors.card,
+                    borderColor: colors.gray[200],
+                  }]}
+                  onPress={() => handleStartPlan(plan.id)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.featureIcon, { backgroundColor: iconColor + '20' }]}>
+                    <BookOpen size={20} color={iconColor} />
+                  </View>
+                  <View style={styles.featureText}>
+                    <Text style={[styles.featureTitle, { color: colors.text }]}>{plan.name}</Text>
+                    <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
+                      {plan.description}
+                    </Text>
+                    <View style={styles.planMeta}>
+                      <Text style={[styles.planDuration, { color: colors.gray[500] }]}>
+                        {plan.duration} days
+                      </Text>
+                      {isStarted && (
+                        <View style={styles.planStatus}>
+                          <Play size={12} color={colors.primary} />
+                          <Text style={[styles.planStatusText, { color: colors.primary }]}>
+                            Day {progress?.currentDay}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  <View style={styles.featureAction}>
+                    {isStarted ? (
+                      <View style={[styles.continueIndicator, { backgroundColor: colors.primary + '20' }]}>
+                        <Play size={16} color={colors.primary} />
+                      </View>
+                    ) : (
+                      <View style={[styles.startIndicator, { backgroundColor: colors.gray[100] }]}>
+                        <Clock size={16} color={colors.gray[500]} />
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       )}
@@ -522,6 +589,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  clickableFeatureItem: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
   featureIcon: {
     width: 48,
     height: 48,
@@ -541,5 +614,41 @@ const styles = StyleSheet.create({
   featureDescription: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  planMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 12,
+  },
+  planDuration: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  planStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  planStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  featureAction: {
+    marginLeft: 12,
+  },
+  continueIndicator: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  startIndicator: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
