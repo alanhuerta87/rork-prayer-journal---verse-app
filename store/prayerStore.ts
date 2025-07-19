@@ -65,8 +65,8 @@ export const usePrayerStore = create<PrayerState>()(
           date: new Date().toISOString(),
           isFavorite: false,
           status: 'ongoing',
-          ...prayer,
           category: prayer.category || 'general',
+          ...prayer,
         };
         
         set((state) => ({

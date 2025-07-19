@@ -5,7 +5,7 @@ import { BookmarksList } from '@/components/BookmarksList';
 import { useThemeStore } from '@/store/themeStore';
 import { usePrayerStore } from '@/store/prayerStore';
 import { useRouter, Stack } from 'expo-router';
-import { BookOpen, ChevronRight, Search, X, Bookmark, History } from 'lucide-react-native';
+import { BookOpen, ChevronRight, Search, X, Bookmark, History, Calendar } from 'lucide-react-native';
 import { bibleBooks } from '@/constants/colors';
 
 export default function BibleScreen() {
@@ -14,7 +14,7 @@ export default function BibleScreen() {
   const { lastReadingPosition } = usePrayerStore();
   const [activeTestament, setActiveTestament] = React.useState<'old' | 'new'>('new');
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [activeTab, setActiveTab] = React.useState<'books' | 'bookmarks' | 'recent'>('books');
+  const [activeTab, setActiveTab] = React.useState<'books' | 'bookmarks' | 'plans'>('books');
 
   const filteredBooks = bibleBooks
     .filter(book => book.testament === activeTestament)
@@ -129,6 +129,27 @@ export default function BibleScreen() {
             Bookmarks
           </Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            { borderBottomColor: colors.gray[300] },
+            activeTab === 'plans' && [styles.activeTabButton, { borderBottomColor: colors.primary }],
+          ]}
+          onPress={() => setActiveTab('plans')}
+          activeOpacity={0.7}
+        >
+          <Calendar size={16} color={activeTab === 'plans' ? colors.primary : colors.gray[600]} />
+          <Text
+            style={[
+              styles.tabButtonText,
+              { color: colors.gray[600] },
+              activeTab === 'plans' && [styles.activeTabButtonText, { color: colors.primary }],
+            ]}
+          >
+            Plans
+          </Text>
+        </TouchableOpacity>
       </View>
       
       {activeTab === 'books' && (
@@ -239,6 +260,70 @@ export default function BibleScreen() {
       
       {activeTab === 'bookmarks' && (
         <BookmarksList />
+      )}
+      
+      {activeTab === 'plans' && (
+        <View style={styles.plansContainer}>
+          <View style={styles.plansHeader}>
+            <Text style={[styles.plansTitle, { color: colors.text }]}>Reading Plans</Text>
+            <Text style={[styles.plansSubtitle, { color: colors.gray[600] }]}>
+              Structured Bible reading to deepen your faith journey
+            </Text>
+          </View>
+          
+          <TouchableOpacity
+            style={[styles.viewAllPlansButton, { 
+              backgroundColor: colors.primary,
+              shadowColor: colors.black,
+            }]}
+            onPress={() => router.push('/bible/reading-plans')}
+            activeOpacity={0.8}
+          >
+            <Calendar size={20} color={colors.white} />
+            <Text style={[styles.viewAllPlansText, { color: colors.white }]}>
+              View All Reading Plans
+            </Text>
+            <ChevronRight size={20} color={colors.white} />
+          </TouchableOpacity>
+          
+          <View style={styles.plansFeatures}>
+            <View style={styles.featureItem}>
+              <View style={[styles.featureIcon, { backgroundColor: colors.primary + '20' }]}>
+                <BookOpen size={20} color={colors.primary} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={[styles.featureTitle, { color: colors.text }]}>1-Year Bible Plan</Text>
+                <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
+                  Read through the entire Bible chronologically
+                </Text>
+              </View>
+            </View>
+            
+            <View style={styles.featureItem}>
+              <View style={[styles.featureIcon, { backgroundColor: colors.success + '20' }]}>
+                <Calendar size={20} color={colors.success} />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={[styles.featureTitle, { color: colors.text }]}>6-Month New Testament</Text>
+                <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
+                  Focus on the life and teachings of Jesus
+                </Text>
+              </View>
+            </View>
+            
+            <View style={styles.featureItem}>
+              <View style={[styles.featureIcon, { backgroundColor: '#F59E0B20' }]}>
+                <Bookmark size={20} color="#F59E0B" />
+              </View>
+              <View style={styles.featureText}>
+                <Text style={[styles.featureTitle, { color: colors.text }]}>30 Days of Wisdom</Text>
+                <Text style={[styles.featureDescription, { color: colors.gray[600] }]}>
+                  Daily readings from Psalms and Proverbs
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -396,5 +481,65 @@ const styles = StyleSheet.create({
   footerSubtext: {
     fontSize: 12,
     marginTop: 4,
+  },
+  plansContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  plansHeader: {
+    marginBottom: 24,
+  },
+  plansTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  plansSubtitle: {
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  viewAllPlansButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 32,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  viewAllPlansText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginHorizontal: 12,
+  },
+  plansFeatures: {
+    gap: 20,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  featureIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  featureText: {
+    flex: 1,
+  },
+  featureTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  featureDescription: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

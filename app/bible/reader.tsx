@@ -5,29 +5,48 @@ import { useThemeStore } from '@/store/themeStore';
 import { useAuthStore } from '@/store/authStore';
 import { TranslationSelector } from '@/components/TranslationSelector';
 import { usePrayerStore } from '@/store/prayerStore';
-import { ChevronLeft, ChevronRight, Share2, BookmarkPlus, Book, ChevronDown, RefreshCw, Bookmark } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Share2, BookmarkPlus, Book, ChevronDown, RefreshCw, Bookmark, CheckCircle } from 'lucide-react-native';
 import { bibleBooks } from '@/constants/colors';
 import { fetchBibleChapter, validateChapter } from '@/mocks/bibleContent';
+import { readingPlans } from '@/mocks/readingPlans';
 import { BibleVerse } from '@/types';
 
 export default function BibleReaderScreen() {
   const router = useRouter();
-  const { book: bookParam } = useLocalSearchParams<{ book: string }>();
+  const { 
+    book: bookParam, 
+    bookId: bookIdParam, 
+    chapter: chapterParam,
+    planId,
+    planDay,
+    readingIndex 
+  } = useLocalSearchParams<{ 
+    book?: string; 
+    bookId?: string; 
+    chapter?: string;
+    planId?: string;
+    planDay?: string;
+    readingIndex?: string;
+  }>();
   const { 
     preferredTranslation, 
     addBookmark, 
     removeBookmark, 
     setLastReadingPosition, 
     getBookmarks,
-    lastReadingPosition 
+    lastReadingPosition,
+    getReadingProgress,
+    updateReadingProgress
   } = usePrayerStore();
   const { colors } = useThemeStore();
   const { isAuthenticated } = useAuthStore();
   
-  const bookId = bookParam || lastReadingPosition?.bookId || 'john';
+  const bookId = bookIdParam || bookParam || lastReadingPosition?.bookId || 'john';
   const book = bibleBooks.find(b => b.id === bookId) || bibleBooks.find(b => b.id === 'john')!;
   
-  const [chapter, setChapter] = useState<number>(lastReadingPosition?.chapter || 1);
+  const [chapter, setChapter] = useState<number>(
+    chapterParam ? parseInt(chapterParam) : lastReadingPosition?.chapter || 1
+  );
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState(16);
@@ -35,6 +54,12 @@ export default function BibleReaderScreen() {
   const [showChapterSelector, setShowChapterSelector] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  
+  // Reading plan state
+  const currentPlan = planId ? readingPlans.find(p => p.id === planId) : null;
+  const currentPlanDay = planDay ? parseInt(planDay) : null;
+  const currentReadingIndex = readingIndex ? parseInt(readingIndex) : null;
+  const planProgress = planId ? getReadingProgress(planId) : null;
 
   // Load chapter content when book, chapter, or translation changes
   useEffect(() => {
