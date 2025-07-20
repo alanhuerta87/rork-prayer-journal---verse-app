@@ -63,12 +63,18 @@ export default function BibleReaderScreen() {
 
   // Load chapter content when book, chapter, or translation changes
   useEffect(() => {
-    loadChapter();
-    checkBookmarkStatus();
-    // Update last reading position only if authenticated
-    if (isAuthenticated) {
-      setLastReadingPosition(bookId, chapter);
-    }
+    console.log('Bible Reader - Preferred Translation:', preferredTranslation);
+    // Add a small delay to ensure the preferred translation is loaded from storage
+    const timer = setTimeout(() => {
+      loadChapter();
+      checkBookmarkStatus();
+      // Update last reading position only if authenticated
+      if (isAuthenticated) {
+        setLastReadingPosition(bookId, chapter);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [bookId, chapter, preferredTranslation]);
   
   const checkBookmarkStatus = () => {
@@ -84,12 +90,16 @@ export default function BibleReaderScreen() {
     setError(null);
     
     try {
-      const chapterVerses = await fetchBibleChapter(bookId, chapter, preferredTranslation);
+      // Ensure we have a valid translation, fallback to kjv if not set
+      const translationToUse = preferredTranslation || 'kjv';
+      console.log('Loading chapter with translation:', translationToUse);
+      
+      const chapterVerses = await fetchBibleChapter(bookId, chapter, translationToUse);
       if (chapterVerses && chapterVerses.length > 0) {
         setVerses(chapterVerses);
       } else {
         setVerses([]);
-        setError(`Unable to load ${book.name} chapter ${chapter}. This chapter may not be available in the ${preferredTranslation.toUpperCase()} translation.`);
+        setError(`Unable to load ${book.name} chapter ${chapter}. This chapter may not be available in the ${translationToUse.toUpperCase()} translation.`);
       }
     } catch (error) {
       console.error('Error loading chapter:', error);
@@ -104,7 +114,8 @@ export default function BibleReaderScreen() {
     if (chapter > 1) {
       setLoading(true);
       const newChapter = chapter - 1;
-      const isValid = await validateChapter(bookId, newChapter, preferredTranslation);
+      const translationToUse = preferredTranslation || 'kjv';
+      const isValid = await validateChapter(bookId, newChapter, translationToUse);
       if (isValid) {
         setChapter(newChapter);
       } else {
@@ -118,7 +129,8 @@ export default function BibleReaderScreen() {
     if (chapter < book.chapters) {
       setLoading(true);
       const newChapter = chapter + 1;
-      const isValid = await validateChapter(bookId, newChapter, preferredTranslation);
+      const translationToUse = preferredTranslation || 'kjv';
+      const isValid = await validateChapter(bookId, newChapter, translationToUse);
       if (isValid) {
         setChapter(newChapter);
       } else {
@@ -171,7 +183,8 @@ export default function BibleReaderScreen() {
   const selectChapter = async (selectedChapter: number) => {
     setLoading(true);
     setShowChapterSelector(false);
-    const isValid = await validateChapter(bookId, selectedChapter, preferredTranslation);
+    const translationToUse = preferredTranslation || 'kjv';
+    const isValid = await validateChapter(bookId, selectedChapter, translationToUse);
     if (isValid) {
       setChapter(selectedChapter);
     } else {
@@ -218,7 +231,7 @@ export default function BibleReaderScreen() {
           <ChevronDown size={16} color={colors.text} />
         </TouchableOpacity>
         
-        <Text style={[styles.translation, { color: colors.gray[600] }]}>{preferredTranslation.toUpperCase()}</Text>
+        <Text style={[styles.translation, { color: colors.gray[600] }]}>{(preferredTranslation || 'kjv').toUpperCase()}</Text>
       </View>
       
       <View style={[styles.controls, { 
