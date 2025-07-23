@@ -75,14 +75,15 @@ export default function SettingsScreen() {
 
   const handleShare = async () => {
     try {
-      const appStoreUrl = 'https://apps.apple.com/app/my-prayer-journal';
-      const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.myprayerjournal';
-      
       const message = `Check out My Prayer Journal - A beautiful app to record your prayers and grow in your faith journey!
 
-📱 Download:
-iOS: ${appStoreUrl}
-Android: ${playStoreUrl}`;
+🙏 Features:
+• Record and organize your prayers
+• Read the Bible with multiple translations
+• Follow structured reading plans
+• Track your spiritual journey
+
+Built with React Native and Expo for a seamless cross-platform experience.`;
       
       if (Platform.OS === 'web') {
         // Web sharing options
@@ -90,22 +91,22 @@ Android: ${playStoreUrl}`;
           {
             text: 'Share on Twitter',
             onPress: () => {
-              const tweetText = encodeURIComponent(`Check out My Prayer Journal - A beautiful app for your spiritual journey! ${appStoreUrl}`);
+              const tweetText = encodeURIComponent(`Check out My Prayer Journal - A beautiful app for your spiritual journey! 🙏 #PrayerJournal #Faith #ReactNative`);
               window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
             }
           },
           {
             text: 'Share on Facebook',
             onPress: () => {
-              const fbUrl = encodeURIComponent(appStoreUrl);
-              window.open(`https://www.facebook.com/sharer/sharer.php?u=${fbUrl}`, '_blank');
+              const shareText = encodeURIComponent('Check out My Prayer Journal - A beautiful app for your spiritual journey!');
+              window.open(`https://www.facebook.com/sharer/sharer.php?quote=${shareText}`, '_blank');
             }
           },
           {
-            text: 'Copy Link',
+            text: 'Copy Message',
             onPress: () => {
-              navigator.clipboard.writeText(appStoreUrl);
-              Alert.alert('Link Copied', 'App store link copied to clipboard!');
+              navigator.clipboard.writeText(message);
+              Alert.alert('Message Copied', 'Share message copied to clipboard!');
             }
           },
           { 
@@ -124,7 +125,6 @@ Android: ${playStoreUrl}`;
         await Share.share({
           message,
           title: 'My Prayer Journal',
-          url: Platform.OS === 'ios' ? appStoreUrl : playStoreUrl,
         });
       }
     } catch (error) {
