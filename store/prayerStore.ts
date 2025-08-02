@@ -70,7 +70,6 @@ export const usePrayerStore = create<PrayerState>()(
           date: new Date().toISOString(),
           isFavorite: false,
           status: 'ongoing',
-          category: 'general',
           ...prayer,
         };
         
