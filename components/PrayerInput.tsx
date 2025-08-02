@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView, Alert } from 'react-native';
 import { useThemeStore } from '@/store/themeStore';
 import { usePrayerStore } from '@/store/prayerStore';
-import { Send, Tag } from 'lucide-react-native';
+import { Send, Tag, Plus, X } from 'lucide-react-native';
 import { PrayerCategory } from '@/types';
 import { getPrayerCategories } from '@/mocks/readingPlans';
 
@@ -16,7 +16,9 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
   const [content, setContent] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<PrayerCategory>('general');
   const [notes, setNotes] = useState('');
-  const { addPrayer } = usePrayerStore();
+  const [selectedCustomTags, setSelectedCustomTags] = useState<string[]>([]);
+  const [newTagInput, setNewTagInput] = useState('');
+  const { addPrayer, customTags, addCustomTag, removeCustomTag } = usePrayerStore();
   
   const categories = getPrayerCategories();
 
@@ -28,12 +30,15 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
       content: content.trim(),
       category: selectedCategory,
       notes: notes.trim() || undefined,
+      customTags: selectedCustomTags.length > 0 ? selectedCustomTags : undefined,
     });
     
     setTitle('');
     setContent('');
     setNotes('');
     setSelectedCategory('general');
+    setSelectedCustomTags([]);
+    setNewTagInput('');
     Keyboard.dismiss();
     
     if (onSubmit) {
@@ -42,6 +47,46 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
   };
 
   const isDisabled = !title.trim() || !content.trim();
+
+  const handleAddCustomTag = () => {
+    const trimmedTag = newTagInput.trim();
+    if (!trimmedTag) return;
+    
+    if (customTags.includes(trimmedTag)) {
+      Alert.alert('Tag exists', 'This tag already exists in your custom tags.');
+      return;
+    }
+    
+    addCustomTag(trimmedTag);
+    setSelectedCustomTags([...selectedCustomTags, trimmedTag]);
+    setNewTagInput('');
+  };
+
+  const handleToggleCustomTag = (tag: string) => {
+    if (selectedCustomTags.includes(tag)) {
+      setSelectedCustomTags(selectedCustomTags.filter(t => t !== tag));
+    } else {
+      setSelectedCustomTags([...selectedCustomTags, tag]);
+    }
+  };
+
+  const handleRemoveCustomTag = (tag: string) => {
+    Alert.alert(
+      'Remove Tag',
+      `Are you sure you want to remove "${tag}" from your custom tags? This will remove it from all prayers.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => {
+            removeCustomTag(tag);
+            setSelectedCustomTags(selectedCustomTags.filter(t => t !== tag));
+          }
+        }
+      ]
+    );
+  };
 
   return (
     <View style={[styles.container, { 
@@ -104,6 +149,72 @@ export const PrayerInput: React.FC<PrayerInputProps> = ({ onSubmit }) => {
             </TouchableOpacity>
           ))}
         </ScrollView>
+      </View>
+      
+      {/* Custom Tags Section */}
+      <View style={styles.customTagsSection}>
+        <View style={styles.categoryHeader}>
+          <Tag size={16} color={colors.primary} />
+          <Text style={[styles.categoryLabel, { color: colors.text }]}>Custom Tags</Text>
+        </View>
+        
+        {/* Add New Tag Input */}
+        <View style={styles.newTagContainer}>
+          <TextInput
+            style={[styles.newTagInput, { 
+              backgroundColor: colors.gray[100],
+              color: colors.text,
+            }]}
+            placeholder="Add custom tag..."
+            value={newTagInput}
+            onChangeText={setNewTagInput}
+            placeholderTextColor={colors.gray[400]}
+            onSubmitEditing={handleAddCustomTag}
+            returnKeyType="done"
+          />
+          <TouchableOpacity
+            style={[styles.addTagButton, { backgroundColor: colors.primary }]}
+            onPress={handleAddCustomTag}
+            disabled={!newTagInput.trim()}
+          >
+            <Plus size={16} color={colors.white} />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Custom Tags List */}
+        {customTags.length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.customTagsScroll}>
+            {customTags.map((tag) => (
+              <View key={tag} style={styles.customTagContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.customTagChip,
+                    { 
+                      backgroundColor: selectedCustomTags.includes(tag) ? colors.primary : colors.gray[100],
+                      borderColor: colors.primary,
+                    }
+                  ]}
+                  onPress={() => handleToggleCustomTag(tag)}
+                >
+                  <Text style={[
+                    styles.customTagText,
+                    { 
+                      color: selectedCustomTags.includes(tag) ? colors.white : colors.text 
+                    }
+                  ]}>
+                    {tag}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.removeTagButton, { backgroundColor: colors.error }]}
+                  onPress={() => handleRemoveCustomTag(tag)}
+                >
+                  <X size={12} color={colors.white} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </View>
       
       <TextInput
@@ -212,5 +323,52 @@ const styles = StyleSheet.create({
     fontSize: 14,
     minHeight: 60,
     marginBottom: 16,
+  },
+  customTagsSection: {
+    marginBottom: 16,
+  },
+  newTagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  newTagInput: {
+    flex: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    marginRight: 8,
+  },
+  addTagButton: {
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  customTagsScroll: {
+    flexDirection: 'row',
+  },
+  customTagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  customTagChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  customTagText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  removeTagButton: {
+    marginLeft: 4,
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

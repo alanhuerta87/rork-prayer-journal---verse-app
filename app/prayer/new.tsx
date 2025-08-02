@@ -3,18 +3,20 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert 
 import { Stack, useRouter } from 'expo-router';
 import { useThemeStore } from '@/store/themeStore';
 import { usePrayerStore } from '@/store/prayerStore';
-import { Send, Tag, ArrowLeft } from 'lucide-react-native';
+import { Send, Tag, ArrowLeft, Plus, X } from 'lucide-react-native';
 import { PrayerCategory } from '@/types';
 import { getPrayerCategories } from '@/mocks/readingPlans';
 
 export default function NewPrayerScreen() {
   const router = useRouter();
   const { colors } = useThemeStore();
-  const { addPrayer } = usePrayerStore();
+  const { addPrayer, customTags, addCustomTag, removeCustomTag } = usePrayerStore();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<PrayerCategory>('general');
   const [notes, setNotes] = useState('');
+  const [selectedCustomTags, setSelectedCustomTags] = useState<string[]>([]);
+  const [newTagInput, setNewTagInput] = useState('');
   
   const categories = getPrayerCategories();
 
@@ -29,6 +31,7 @@ export default function NewPrayerScreen() {
       content: content.trim(),
       category: selectedCategory,
       notes: notes.trim() || undefined,
+      customTags: selectedCustomTags.length > 0 ? selectedCustomTags : undefined,
     });
     
     Alert.alert('Prayer Saved', 'Your prayer has been added to your journal.', [
@@ -37,7 +40,7 @@ export default function NewPrayerScreen() {
   };
 
   const handleBack = () => {
-    if (title.trim() || content.trim() || notes.trim()) {
+    if (title.trim() || content.trim() || notes.trim() || selectedCustomTags.length > 0) {
       Alert.alert(
         'Discard Prayer?',
         'You have unsaved changes. Are you sure you want to go back?',
@@ -49,6 +52,46 @@ export default function NewPrayerScreen() {
     } else {
       router.back();
     }
+  };
+
+  const handleAddCustomTag = () => {
+    const trimmedTag = newTagInput.trim();
+    if (!trimmedTag) return;
+    
+    if (customTags.includes(trimmedTag)) {
+      Alert.alert('Tag exists', 'This tag already exists in your custom tags.');
+      return;
+    }
+    
+    addCustomTag(trimmedTag);
+    setSelectedCustomTags([...selectedCustomTags, trimmedTag]);
+    setNewTagInput('');
+  };
+
+  const handleToggleCustomTag = (tag: string) => {
+    if (selectedCustomTags.includes(tag)) {
+      setSelectedCustomTags(selectedCustomTags.filter(t => t !== tag));
+    } else {
+      setSelectedCustomTags([...selectedCustomTags, tag]);
+    }
+  };
+
+  const handleRemoveCustomTag = (tag: string) => {
+    Alert.alert(
+      'Remove Tag',
+      `Are you sure you want to remove "${tag}" from your custom tags? This will remove it from all prayers.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => {
+            removeCustomTag(tag);
+            setSelectedCustomTags(selectedCustomTags.filter(t => t !== tag));
+          }
+        }
+      ]
+    );
   };
 
   const isDisabled = !title.trim() || !content.trim();
@@ -134,6 +177,73 @@ export default function NewPrayerScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+          </View>
+          
+          {/* Custom Tags Section */}
+          <View style={styles.inputGroup}>
+            <View style={styles.categoryHeader}>
+              <Tag size={16} color={colors.primary} />
+              <Text style={[styles.label, { color: colors.text, marginLeft: 6 }]}>Custom Tags</Text>
+            </View>
+            
+            {/* Add New Tag Input */}
+            <View style={styles.newTagContainer}>
+              <TextInput
+                style={[styles.newTagInput, { 
+                  backgroundColor: colors.gray[100],
+                  color: colors.text,
+                  borderColor: colors.gray[200],
+                }]}
+                placeholder="Add custom tag..."
+                value={newTagInput}
+                onChangeText={setNewTagInput}
+                placeholderTextColor={colors.gray[400]}
+                onSubmitEditing={handleAddCustomTag}
+                returnKeyType="done"
+              />
+              <TouchableOpacity
+                style={[styles.addTagButton, { backgroundColor: colors.primary }]}
+                onPress={handleAddCustomTag}
+                disabled={!newTagInput.trim()}
+              >
+                <Plus size={16} color={colors.white} />
+              </TouchableOpacity>
+            </View>
+            
+            {/* Custom Tags List */}
+            {customTags.length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.customTagsScroll}>
+                {customTags.map((tag) => (
+                  <View key={tag} style={styles.customTagContainer}>
+                    <TouchableOpacity
+                      style={[
+                        styles.customTagChip,
+                        { 
+                          backgroundColor: selectedCustomTags.includes(tag) ? colors.primary : colors.gray[100],
+                          borderColor: colors.primary,
+                        }
+                      ]}
+                      onPress={() => handleToggleCustomTag(tag)}
+                    >
+                      <Text style={[
+                        styles.customTagText,
+                        { 
+                          color: selectedCustomTags.includes(tag) ? colors.white : colors.text 
+                        }
+                      ]}>
+                        {tag}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.removeTagButton, { backgroundColor: colors.error }]}
+                      onPress={() => handleRemoveCustomTag(tag)}
+                    >
+                      <X size={12} color={colors.white} />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
+            )}
           </View>
           
           <View style={styles.inputGroup}>
@@ -263,5 +373,50 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
     marginRight: 8,
+  },
+  newTagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  newTagInput: {
+    flex: 1,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 14,
+    marginRight: 8,
+    borderWidth: 1,
+  },
+  addTagButton: {
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  customTagsScroll: {
+    flexDirection: 'row',
+  },
+  customTagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  customTagChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  customTagText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  removeTagButton: {
+    marginLeft: 4,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

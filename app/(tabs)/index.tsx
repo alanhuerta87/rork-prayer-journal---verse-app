@@ -40,7 +40,7 @@ export default function HomeScreen() {
     router.push('/prayers');
   };
 
-  const recentPrayers = prayers.slice(0, 3);
+  const recentPrayers = prayers.slice(0, 1);
 
   return (
     <ScrollView 
@@ -79,7 +79,7 @@ export default function HomeScreen() {
         {recentPrayers.length > 0 ? (
           <>
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Prayers</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Recent Prayer</Text>
             </View>
             {recentPrayers.map((prayer) => (
               <PrayerCard key={prayer.id} prayer={prayer} />

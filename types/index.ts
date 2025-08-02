@@ -8,6 +8,7 @@ export interface Prayer {
   date: string;
   isFavorite: boolean;
   tags?: string[];
+  customTags?: string[];
   category: PrayerCategory;
   status: PrayerStatus;
   answeredDate?: string;

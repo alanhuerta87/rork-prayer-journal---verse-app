@@ -23,6 +23,7 @@ interface PrayerState {
   lastReadingPosition: BookmarkState | null;
   readingProgress: UserReadingProgress[];
   verseHighlights: { [key: string]: { highlighted: boolean; note?: string } };
+  customTags: string[];
   addPrayer: (prayer: Omit<Prayer, 'id' | 'date' | 'isFavorite' | 'status'>) => void;
   updatePrayer: (prayer: Prayer) => void;
   deletePrayer: (id: string) => void;
@@ -44,6 +45,9 @@ interface PrayerState {
   highlightVerse: (bookId: string, chapter: number, verse: number, note?: string) => void;
   removeVerseHighlight: (bookId: string, chapter: number, verse: number) => void;
   getVerseHighlight: (bookId: string, chapter: number, verse: number) => { highlighted: boolean; note?: string } | null;
+  addCustomTag: (tag: string) => void;
+  removeCustomTag: (tag: string) => void;
+  getCustomTags: () => string[];
 }
 
 export const usePrayerStore = create<PrayerState>()(
@@ -58,6 +62,7 @@ export const usePrayerStore = create<PrayerState>()(
       lastReadingPosition: null,
       readingProgress: [],
       verseHighlights: {},
+      customTags: [],
       
       addPrayer: (prayer) => {
         const newPrayer: Prayer = {
@@ -334,6 +339,28 @@ export const usePrayerStore = create<PrayerState>()(
         const { verseHighlights } = get();
         return verseHighlights[key] || null;
       },
+      
+      addCustomTag: (tag) => {
+        const trimmedTag = tag.trim();
+        if (!trimmedTag) return;
+        
+        set((state) => {
+          if (!state.customTags.includes(trimmedTag)) {
+            return { customTags: [...state.customTags, trimmedTag] };
+          }
+          return state;
+        });
+      },
+      
+      removeCustomTag: (tag) => {
+        set((state) => ({
+          customTags: state.customTags.filter(t => t !== tag)
+        }));
+      },
+      
+      getCustomTags: () => {
+        return get().customTags;
+      },
     }),
     {
       name: 'prayer-journal-storage',
@@ -347,6 +374,7 @@ export const usePrayerStore = create<PrayerState>()(
         lastReadingPosition: state.lastReadingPosition,
         readingProgress: state.readingProgress,
         verseHighlights: state.verseHighlights,
+        customTags: state.customTags,
       }),
     }
   )

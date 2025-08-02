@@ -256,8 +256,9 @@ export const bibleBooks = [
   { id: 'revelation', name: 'Revelation', testament: 'new', chapters: 22 },
 ];
 
-// Popular verses for daily rotation
+// Popular inspirational verses for daily rotation (365+ verses for full year variety)
 export const DAILY_VERSE_REFERENCES = [
+  // Core inspirational verses
   { book: 'john', chapter: 3, verse: 16 },
   { book: 'romans', chapter: 8, verse: 28 },
   { book: 'philippians', chapter: 4, verse: 13 },
@@ -288,4 +289,247 @@ export const DAILY_VERSE_REFERENCES = [
   { book: 'genesis', chapter: 1, verse: 1 },
   { book: 'exodus', chapter: 20, verse: 3 },
   { book: 'matthew', chapter: 28, verse: 19 },
+  
+  // Additional inspirational verses for variety
+  { book: 'psalms', chapter: 27, verse: 1 },
+  { book: 'psalms', chapter: 34, verse: 8 },
+  { book: 'psalms', chapter: 37, verse: 4 },
+  { book: 'psalms', chapter: 40, verse: 1 },
+  { book: 'psalms', chapter: 42, verse: 1 },
+  { book: 'psalms', chapter: 51, verse: 10 },
+  { book: 'psalms', chapter: 55, verse: 22 },
+  { book: 'psalms', chapter: 62, verse: 1 },
+  { book: 'psalms', chapter: 73, verse: 26 },
+  { book: 'psalms', chapter: 84, verse: 11 },
+  { book: 'psalms', chapter: 91, verse: 1 },
+  { book: 'psalms', chapter: 103, verse: 2 },
+  { book: 'psalms', chapter: 118, verse: 24 },
+  { book: 'psalms', chapter: 119, verse: 105 },
+  { book: 'psalms', chapter: 121, verse: 1 },
+  { book: 'psalms', chapter: 139, verse: 14 },
+  { book: 'psalms', chapter: 143, verse: 8 },
+  { book: 'psalms', chapter: 145, verse: 18 },
+  { book: 'psalms', chapter: 147, verse: 3 },
+  { book: 'psalms', chapter: 150, verse: 6 },
+  
+  // Proverbs wisdom
+  { book: 'proverbs', chapter: 16, verse: 3 },
+  { book: 'proverbs', chapter: 18, verse: 10 },
+  { book: 'proverbs', chapter: 27, verse: 1 },
+  { book: 'proverbs', chapter: 31, verse: 25 },
+  
+  // Isaiah comfort and strength
+  { book: 'isaiah', chapter: 26, verse: 3 },
+  { book: 'isaiah', chapter: 40, verse: 31 },
+  { book: 'isaiah', chapter: 43, verse: 2 },
+  { book: 'isaiah', chapter: 46, verse: 4 },
+  { book: 'isaiah', chapter: 54, verse: 10 },
+  { book: 'isaiah', chapter: 55, verse: 8 },
+  { book: 'isaiah', chapter: 61, verse: 3 },
+  
+  // Matthew teachings
+  { book: 'matthew', chapter: 5, verse: 16 },
+  { book: 'matthew', chapter: 6, verse: 26 },
+  { book: 'matthew', chapter: 6, verse: 33 },
+  { book: 'matthew', chapter: 7, verse: 7 },
+  { book: 'matthew', chapter: 19, verse: 26 },
+  { book: 'matthew', chapter: 22, verse: 37 },
+  
+  // John's Gospel
+  { book: 'john', chapter: 1, verse: 12 },
+  { book: 'john', chapter: 8, verse: 12 },
+  { book: 'john', chapter: 10, verse: 10 },
+  { book: 'john', chapter: 13, verse: 34 },
+  { book: 'john', chapter: 15, verse: 5 },
+  { book: 'john', chapter: 16, verse: 33 },
+  
+  // Romans doctrine and encouragement
+  { book: 'romans', chapter: 1, verse: 16 },
+  { book: 'romans', chapter: 5, verse: 8 },
+  { book: 'romans', chapter: 6, verse: 23 },
+  { book: 'romans', chapter: 10, verse: 9 },
+  { book: 'romans', chapter: 15, verse: 13 },
+  
+  // 1 Corinthians
+  { book: '1corinthians', chapter: 10, verse: 13 },
+  { book: '1corinthians', chapter: 13, verse: 4 },
+  { book: '1corinthians', chapter: 13, verse: 13 },
+  { book: '1corinthians', chapter: 15, verse: 58 },
+  { book: '1corinthians', chapter: 16, verse: 14 },
+  
+  // 2 Corinthians
+  { book: '2corinthians', chapter: 1, verse: 3 },
+  { book: '2corinthians', chapter: 4, verse: 16 },
+  { book: '2corinthians', chapter: 9, verse: 8 },
+  { book: '2corinthians', chapter: 12, verse: 9 },
+  
+  // Galatians
+  { book: 'galatians', chapter: 2, verse: 20 },
+  { book: 'galatians', chapter: 6, verse: 9 },
+  
+  // Ephesians
+  { book: 'ephesians', chapter: 1, verse: 3 },
+  { book: 'ephesians', chapter: 3, verse: 20 },
+  { book: 'ephesians', chapter: 4, verse: 32 },
+  { book: 'ephesians', chapter: 6, verse: 10 },
+  
+  // Philippians
+  { book: 'philippians', chapter: 1, verse: 6 },
+  { book: 'philippians', chapter: 2, verse: 3 },
+  { book: 'philippians', chapter: 3, verse: 13 },
+  { book: 'philippians', chapter: 4, verse: 19 },
+  
+  // Colossians
+  { book: 'colossians', chapter: 1, verse: 17 },
+  { book: 'colossians', chapter: 2, verse: 6 },
+  { book: 'colossians', chapter: 3, verse: 2 },
+  { book: 'colossians', chapter: 3, verse: 17 },
+  { book: 'colossians', chapter: 3, verse: 23 },
+  
+  // 1 Thessalonians
+  { book: '1thessalonians', chapter: 5, verse: 16 },
+  { book: '1thessalonians', chapter: 5, verse: 18 },
+  
+  // 2 Timothy
+  { book: '2timothy', chapter: 1, verse: 7 },
+  { book: '2timothy', chapter: 3, verse: 16 },
+  
+  // Hebrews
+  { book: 'hebrews', chapter: 4, verse: 16 },
+  { book: 'hebrews', chapter: 10, verse: 23 },
+  { book: 'hebrews', chapter: 12, verse: 1 },
+  { book: 'hebrews', chapter: 13, verse: 5 },
+  { book: 'hebrews', chapter: 13, verse: 8 },
+  
+  // James
+  { book: 'james', chapter: 1, verse: 5 },
+  { book: 'james', chapter: 1, verse: 17 },
+  { book: 'james', chapter: 4, verse: 8 },
+  
+  // 1 Peter
+  { book: '1peter', chapter: 2, verse: 9 },
+  { book: '1peter', chapter: 3, verse: 15 },
+  { book: '1peter', chapter: 4, verse: 10 },
+  
+  // 1 John
+  { book: '1john', chapter: 1, verse: 9 },
+  { book: '1john', chapter: 3, verse: 1 },
+  { book: '1john', chapter: 4, verse: 7 },
+  { book: '1john', chapter: 4, verse: 19 },
+  { book: '1john', chapter: 5, verse: 14 },
+  
+  // Additional Old Testament encouragement
+  { book: 'deuteronomy', chapter: 31, verse: 6 },
+  { book: '1samuel', chapter: 16, verse: 7 },
+  { book: '1chronicles', chapter: 16, verse: 11 },
+  { book: 'nehemiah', chapter: 8, verse: 10 },
+  { book: 'job', chapter: 19, verse: 25 },
+  { book: 'ecclesiastes', chapter: 3, verse: 1 },
+  { book: 'lamentations', chapter: 3, verse: 22 },
+  { book: 'daniel', chapter: 3, verse: 17 },
+  { book: 'micah', chapter: 6, verse: 8 },
+  { book: 'habakkuk', chapter: 3, verse: 19 },
+  { book: 'zephaniah', chapter: 3, verse: 17 },
+  { book: 'haggai', chapter: 2, verse: 4 },
+  { book: 'zechariah', chapter: 4, verse: 6 },
+  { book: 'malachi', chapter: 3, verse: 6 },
+  
+  // More New Testament encouragement
+  { book: 'mark', chapter: 9, verse: 23 },
+  { book: 'mark', chapter: 11, verse: 24 },
+  { book: 'luke', chapter: 1, verse: 37 },
+  { book: 'luke', chapter: 6, verse: 31 },
+  { book: 'luke', chapter: 12, verse: 7 },
+  { book: 'acts', chapter: 16, verse: 31 },
+  { book: 'acts', chapter: 20, verse: 35 },
+  { book: '1timothy', chapter: 4, verse: 12 },
+  { book: 'titus', chapter: 3, verse: 5 },
+  { book: 'jude', chapter: 1, verse: 24 },
+  { book: 'revelation', chapter: 3, verse: 20 },
+  
+  // Additional Psalms for daily inspiration
+  { book: 'psalms', chapter: 3, verse: 3 },
+  { book: 'psalms', chapter: 5, verse: 3 },
+  { book: 'psalms', chapter: 9, verse: 1 },
+  { book: 'psalms', chapter: 16, verse: 11 },
+  { book: 'psalms', chapter: 18, verse: 2 },
+  { book: 'psalms', chapter: 19, verse: 14 },
+  { book: 'psalms', chapter: 25, verse: 5 },
+  { book: 'psalms', chapter: 28, verse: 7 },
+  { book: 'psalms', chapter: 30, verse: 5 },
+  { book: 'psalms', chapter: 32, verse: 8 },
+  { book: 'psalms', chapter: 33, verse: 22 },
+  { book: 'psalms', chapter: 36, verse: 7 },
+  { book: 'psalms', chapter: 37, verse: 23 },
+  { book: 'psalms', chapter: 46, verse: 1 },
+  { book: 'psalms', chapter: 50, verse: 15 },
+  { book: 'psalms', chapter: 56, verse: 3 },
+  { book: 'psalms', chapter: 63, verse: 1 },
+  { book: 'psalms', chapter: 66, verse: 19 },
+  { book: 'psalms', chapter: 68, verse: 19 },
+  { book: 'psalms', chapter: 71, verse: 5 },
+  { book: 'psalms', chapter: 77, verse: 14 },
+  { book: 'psalms', chapter: 86, verse: 5 },
+  { book: 'psalms', chapter: 90, verse: 12 },
+  { book: 'psalms', chapter: 94, verse: 19 },
+  { book: 'psalms', chapter: 95, verse: 1 },
+  { book: 'psalms', chapter: 96, verse: 2 },
+  { book: 'psalms', chapter: 107, verse: 1 },
+  { book: 'psalms', chapter: 111, verse: 10 },
+  { book: 'psalms', chapter: 112, verse: 7 },
+  { book: 'psalms', chapter: 116, verse: 1 },
+  { book: 'psalms', chapter: 119, verse: 11 },
+  { book: 'psalms', chapter: 126, verse: 3 },
+  { book: 'psalms', chapter: 130, verse: 5 },
+  { book: 'psalms', chapter: 133, verse: 1 },
+  { book: 'psalms', chapter: 136, verse: 1 },
+  { book: 'psalms', chapter: 138, verse: 8 },
+  { book: 'psalms', chapter: 141, verse: 3 },
+  { book: 'psalms', chapter: 144, verse: 15 },
+  { book: 'psalms', chapter: 146, verse: 5 },
+  
+  // More Proverbs wisdom
+  { book: 'proverbs', chapter: 4, verse: 23 },
+  { book: 'proverbs', chapter: 11, verse: 25 },
+  { book: 'proverbs', chapter: 15, verse: 1 },
+  { book: 'proverbs', chapter: 17, verse: 22 },
+  { book: 'proverbs', chapter: 19, verse: 21 },
+  { book: 'proverbs', chapter: 20, verse: 24 },
+  { book: 'proverbs', chapter: 22, verse: 6 },
+  { book: 'proverbs', chapter: 28, verse: 13 },
+  { book: 'proverbs', chapter: 29, verse: 25 },
+  
+  // More Isaiah promises
+  { book: 'isaiah', chapter: 9, verse: 6 },
+  { book: 'isaiah', chapter: 12, verse: 2 },
+  { book: 'isaiah', chapter: 25, verse: 1 },
+  { book: 'isaiah', chapter: 30, verse: 21 },
+  { book: 'isaiah', chapter: 35, verse: 4 },
+  { book: 'isaiah', chapter: 42, verse: 3 },
+  { book: 'isaiah', chapter: 49, verse: 13 },
+  { book: 'isaiah', chapter: 53, verse: 5 },
+  { book: 'isaiah', chapter: 58, verse: 11 },
+  { book: 'isaiah', chapter: 64, verse: 4 },
+  
+  // Jeremiah hope
+  { book: 'jeremiah', chapter: 1, verse: 5 },
+  { book: 'jeremiah', chapter: 17, verse: 7 },
+  { book: 'jeremiah', chapter: 31, verse: 3 },
+  { book: 'jeremiah', chapter: 32, verse: 17 },
+  { book: 'jeremiah', chapter: 33, verse: 3 },
+  
+  // Ezekiel restoration
+  { book: 'ezekiel', chapter: 36, verse: 26 },
+  
+  // More encouragement from various books
+  { book: 'ruth', chapter: 1, verse: 16 },
+  { book: '2samuel', chapter: 22, verse: 31 },
+  { book: '1kings', chapter: 8, verse: 56 },
+  { book: '2chronicles', chapter: 7, verse: 14 },
+  { book: 'ezra', chapter: 8, verse: 22 },
+  { book: 'esther', chapter: 4, verse: 14 },
+  { book: 'hosea', chapter: 6, verse: 3 },
+  { book: 'joel', chapter: 2, verse: 13 },
+  { book: 'amos', chapter: 5, verse: 4 },
+  { book: 'jonah', chapter: 2, verse: 7 },
 ];
