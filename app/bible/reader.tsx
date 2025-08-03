@@ -64,6 +64,8 @@ export default function BibleReaderScreen() {
   // Load chapter content when book, chapter, or translation changes
   useEffect(() => {
     console.log('Bible Reader - Preferred Translation:', preferredTranslation);
+    console.log('Bible Reader - Book ID:', bookId, 'Chapter:', chapter);
+    
     // Add a small delay to ensure the preferred translation is loaded from storage
     const timer = setTimeout(() => {
       loadChapter();

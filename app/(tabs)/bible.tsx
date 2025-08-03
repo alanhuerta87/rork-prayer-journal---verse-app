@@ -97,6 +97,12 @@ export default function BibleScreen() {
   const oldTestamentCount = bibleBooks.filter(book => book.testament === 'old').length;
   const newTestamentCount = bibleBooks.filter(book => book.testament === 'new').length;
 
+  // Get active reading plans and featured plans
+  const activeReadingPlans = isAuthenticated ? readingPlans.filter(plan => {
+    const progress = getReadingProgress(plan.id);
+    return progress && progress.completedDays.length < plan.duration;
+  }) : [];
+  
   // Get the first 3 reading plans for featured display
   const featuredPlans = readingPlans.slice(0, 3);
 
@@ -320,6 +326,57 @@ export default function BibleScreen() {
               Structured Bible reading to deepen your faith journey
             </Text>
           </View>
+          
+          {/* Active Reading Plans Section */}
+          {activeReadingPlans.length > 0 && (
+            <View style={styles.activeSection}>
+              <Text style={[styles.activeSectionTitle, { color: colors.text }]}>Continue Reading</Text>
+              {activeReadingPlans.map((plan) => {
+                const progress = getReadingProgress(plan.id)!;
+                const completionPercentage = Math.round((progress.completedDays.length / plan.duration) * 100);
+                
+                return (
+                  <TouchableOpacity
+                    key={plan.id}
+                    style={[styles.activePlanCard, { 
+                      backgroundColor: colors.card,
+                      borderColor: colors.primary,
+                      shadowColor: colors.black,
+                    }]}
+                    onPress={() => router.push(`/bible/plan/${plan.id}`)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.activePlanHeader}>
+                      <View style={[styles.activePlanIcon, { backgroundColor: colors.primary + '20' }]}>
+                        <BookOpen size={20} color={colors.primary} />
+                      </View>
+                      <View style={styles.activePlanInfo}>
+                        <Text style={[styles.activePlanTitle, { color: colors.text }]}>{plan.name}</Text>
+                        <Text style={[styles.activePlanProgress, { color: colors.gray[600] }]}>
+                          Day {progress.currentDay} of {plan.duration} • {completionPercentage}% complete
+                        </Text>
+                      </View>
+                      <View style={[styles.continueIndicator, { backgroundColor: colors.primary + '20' }]}>
+                        <Play size={16} color={colors.primary} />
+                      </View>
+                    </View>
+                    
+                    <View style={[styles.progressBar, { backgroundColor: colors.gray[200] }]}>
+                      <View 
+                        style={[
+                          styles.progressFill, 
+                          { 
+                            backgroundColor: colors.primary,
+                            width: `${completionPercentage}%`
+                          }
+                        ]} 
+                      />
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
           
           <TouchableOpacity
             style={[styles.viewAllPlansButton, { 
@@ -650,5 +707,56 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  activeSection: {
+    marginBottom: 32,
+  },
+  activeSectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  activePlanCard: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  activePlanHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  activePlanIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  activePlanInfo: {
+    flex: 1,
+  },
+  activePlanTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  activePlanProgress: {
+    fontSize: 14,
+  },
+  progressBar: {
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 2,
   },
 });
