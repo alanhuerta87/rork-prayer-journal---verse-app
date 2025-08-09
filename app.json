@@ -38,7 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "owner": "alanhuerta",
+    "extra": {
+      "eas": {
+        "projectId": "e8d0e7ea-ae85-4ce3-91c5-e95b27780a7a"
+      }
     }
   }
 }
-   
