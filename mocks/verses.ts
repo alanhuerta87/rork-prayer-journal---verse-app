@@ -4,13 +4,18 @@ import { DAILY_VERSE_REFERENCES } from "@/constants/colors";
 
 // Helper function to get a deterministic "random" verse based on date
 const getVerseIndexForDate = (date: Date): number => {
-  // Create a simple hash from the date
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
+  // Create a better hash from the date using day of year
+  const startOfYear = new Date(date.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   const year = date.getFullYear();
   
-  // Simple hash function to get a deterministic index
-  return (day * month * year) % DAILY_VERSE_REFERENCES.length;
+  // Use day of year + year offset to ensure different verses each day
+  // This gives us a unique index for each day that cycles through all available verses
+  const hash = (dayOfYear + (year * 367)) % DAILY_VERSE_REFERENCES.length;
+  
+  console.log(`Date: ${date.toDateString()}, Day of year: ${dayOfYear}, Hash: ${hash}, Total verses: ${DAILY_VERSE_REFERENCES.length}`);
+  
+  return hash;
 };
 
 // Function to get today's verse from API with enhanced error handling

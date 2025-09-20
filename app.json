@@ -18,12 +18,12 @@
       "bundleIdentifier": "app.rork.prayer-journal-verse-app"
     },
     "android": {
-  "adaptiveIcon": {
-    "foregroundImage": "./assets/images/adaptive-icon.png",
-    "backgroundColor": "#ffffff"
-  },
-  "package": "app.rork.prayerjournalverseapp",
-  "versionCode": 1
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "app.rork.prayerjournalverseapp",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
