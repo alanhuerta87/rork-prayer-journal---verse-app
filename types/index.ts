@@ -20,6 +20,7 @@ export interface DailyVerse {
   text: string;
   translation: string;
   date: string;
+  season?: string;
 }
 
 export interface BibleVerse {

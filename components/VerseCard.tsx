@@ -133,9 +133,19 @@ export const VerseCard: React.FC<VerseCardProps> = ({ verse }) => {
   const CardContent = () => (
     <View style={[styles.cardContent, hasBackground && styles.overlayContent]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: titleColor }]}>
-          Verse of the Day
-        </Text>
+        <View style={styles.titleContainer}>
+          <Text style={[styles.title, { color: titleColor }]}>
+            Verse of the Day
+          </Text>
+          {verse.season && (
+            <Text style={[styles.seasonBadge, { 
+              backgroundColor: hasBackground ? 'rgba(255,255,255,0.2)' : colors.primary + '20',
+              color: hasBackground ? colors.white : colors.primary 
+            }]}>
+              {verse.season}
+            </Text>
+          )}
+        </View>
         <View style={styles.headerButtons}>
           <TouchableOpacity 
             style={[styles.actionButton, { backgroundColor: hasBackground ? 'rgba(255,255,255,0.2)' : colors.gray[100] }]} 
@@ -287,6 +297,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
+  },
+  titleContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  seasonBadge: {
+    fontSize: 12,
+    fontWeight: '500',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginTop: 4,
+    alignSelf: 'flex-start',
   },
   headerButtons: {
     flexDirection: 'row',
